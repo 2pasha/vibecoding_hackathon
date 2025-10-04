@@ -43,12 +43,15 @@ export interface AuthState {
   message: string;
 }
 
+export type TabType = 'knowledge-qa' | 'skillsmith';
+
 export interface AppState {
   messages: Message[];
   isProcessing: boolean;
   apiHealthy: boolean;
   maxTokens: number;
   auth: AuthState;
+  activeTab: TabType;
 }
 
 // Component Props Types

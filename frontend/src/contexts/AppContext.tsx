@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, ReactNode } from 'react';
-import { AuthState, AppState, Message } from '@/types';
+import { AuthState, AppState, Message, TabType } from '@/types';
 import { apiClient } from '@/services/api';
 
 // Action types
@@ -13,6 +13,7 @@ type AppAction =
   | { type: 'SET_PROCESSING'; payload: boolean }
   | { type: 'SET_API_HEALTH'; payload: boolean }
   | { type: 'SET_MAX_TOKENS'; payload: number }
+  | { type: 'SET_ACTIVE_TAB'; payload: TabType }
   | { type: 'CLEAR_MESSAGES' }
   | AuthAction;
 
@@ -29,6 +30,7 @@ const initialState: AppState = {
   apiHealthy: true, // Assume healthy for development
   maxTokens: 600,
   auth: initialAuthState,
+  activeTab: 'knowledge-qa',
 };
 
 // Reducers
@@ -55,6 +57,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, apiHealthy: action.payload };
     case 'SET_MAX_TOKENS':
       return { ...state, maxTokens: action.payload };
+    case 'SET_ACTIVE_TAB':
+      return { ...state, activeTab: action.payload };
     case 'CLEAR_MESSAGES':
       return { ...state, messages: [] };
     case 'SET_TOKEN':
@@ -75,6 +79,7 @@ interface AppContextType {
   sendMessage: (content: string) => Promise<void>;
   clearMessages: () => void;
   setMaxTokens: (tokens: number) => void;
+  setActiveTab: (tab: TabType) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -165,6 +170,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_MAX_TOKENS', payload: tokens });
   };
 
+  const setActiveTab = (tab: TabType) => {
+    dispatch({ type: 'SET_ACTIVE_TAB', payload: tab });
+  };
+
   const value: AppContextType = {
     state,
     dispatch,
@@ -173,6 +182,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     sendMessage,
     clearMessages,
     setMaxTokens,
+    setActiveTab,
   };
 
   return (
