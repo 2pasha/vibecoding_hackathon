@@ -1,92 +1,72 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { AppProvider, useApp } from '@/contexts/AppContext';
-import { ChatHistory } from '@/components/ChatHistory';
-import { ChatInput } from '@/components/ChatInput';
-import { SettingsPanel } from '@/components/SettingsPanel';
-import { ExampleQuestions } from '@/components/ExampleQuestions';
-import { BookOpen, Trash2 } from 'lucide-react';
+import { TabNavigation } from '@/components/TabNavigation';
+import { KnowledgeQA } from '@/components/KnowledgeQA';
+import { SkillSmith } from '@/components/SkillSmith';
+import { BookOpen, Settings, User } from 'lucide-react';
 
 function AppContent() {
-  const { state, validateToken, checkApiHealth, sendMessage, clearMessages, setMaxTokens } = useApp();
+  const { state, setActiveTab } = useApp();
 
-  // Manual health check only when needed
-
-  const handleAuthChange = async (auth: typeof state.auth) => {
-    await validateToken(auth.token);
+  const renderActiveTab = () => {
+    switch (state.activeTab) {
+      case 'knowledge-qa':
+        return <KnowledgeQA />;
+      case 'skillsmith':
+        return <SkillSmith />;
+      default:
+        return <KnowledgeQA />;
+    }
   };
-
-  const handleQuestionSelect = (question: string) => {
-    sendMessage(question);
-  };
-
-  const placeholder = state.auth.isValid 
-    ? "e.g., What is the vacation policy?"
-    : "Please validate your API token first";
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="main-header">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-3">
-            <BookOpen className="h-8 w-8 text-primary" />
-            <div className="text-center">
-              <h1 className="text-3xl font-bold">ETI HR Manual Chat</h1>
-              <p className="text-muted-foreground">Ask questions about ETI HR policies and procedures</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Enhanced Header */}
+      <header className="bg-white border-b border-gray-200/60 shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6">
+          {/* Main Header Row */}
+          <div className="flex items-center justify-between h-16">
+            {/* Logo Section */}
+            <div className="flex items-center gap-4">
+              <div className="p-2.5 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-sm header-logo">
+                <BookOpen className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-lg font-semibold text-gray-900 leading-tight">Cheatix Team Assistance</h1>
+                <p className="text-xs text-gray-500 font-medium">AI-powered team productivity</p>
+              </div>
+            </div>
+
+            {/* Center: Tab Navigation */}
+            <div className="flex-1 flex justify-center px-8">
+              <TabNavigation 
+                activeTab={state.activeTab} 
+                onTabChange={setActiveTab} 
+              />
+            </div>
+
+            {/* Right Side Controls */}
+            <div className="flex items-center gap-1">
+              <button 
+                className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                aria-label="Settings"
+              >
+                <Settings className="h-5 w-5 header-icon" />
+              </button>
+              <button 
+                className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                aria-label="User profile"
+              >
+                <User className="h-5 w-5 header-icon" />
+              </button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 pb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-200px)]">
-          {/* Sidebar */}
-          <aside className="lg:col-span-1 space-y-6">
-            <div className="bg-card border border-border rounded-lg p-4">
-              <SettingsPanel
-                auth={state.auth}
-                onAuthChange={handleAuthChange}
-                maxTokens={state.maxTokens}
-                onMaxTokensChange={setMaxTokens}
-                apiHealthy={state.apiHealthy}
-                onApiHealthCheck={checkApiHealth}
-              />
-            </div>
-
-            <div className="bg-card border border-border rounded-lg p-4">
-              <ExampleQuestions
-                onQuestionSelect={handleQuestionSelect}
-                disabled={state.isProcessing || !state.auth.isValid}
-              />
-            </div>
-          </aside>
-
-          {/* Main Chat Area */}
-          <main className="lg:col-span-3 flex flex-col bg-card border border-border rounded-lg overflow-hidden">
-            {/* Chat Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <h2 className="text-lg font-semibold">Chat</h2>
-              <button
-                onClick={clearMessages}
-                disabled={state.isProcessing || state.messages.length === 0}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <Trash2 className="h-4 w-4" />
-                Clear Chat
-              </button>
-            </div>
-
-            {/* Chat History */}
-            <ChatHistory messages={state.messages} />
-
-            {/* Chat Input */}
-            <ChatInput
-              onSendMessage={sendMessage}
-              disabled={state.isProcessing || !state.auth.isValid}
-              placeholder={placeholder}
-            />
-          </main>
-        </div>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {renderActiveTab()}
       </div>
     </div>
   );

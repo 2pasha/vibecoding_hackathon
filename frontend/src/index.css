@@ -83,8 +83,25 @@
   @apply bg-red-50 text-red-700 p-4 rounded-lg border border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800;
 }
 
-.main-header {
-  @apply text-center py-4 border-b-2 border-gray-200 dark:border-gray-700 mb-8;
+/* Enhanced header styles */
+.header-logo {
+  @apply transition-transform duration-200 hover:scale-105;
+}
+
+.header-icon {
+  @apply transition-all duration-200 hover:scale-110;
+}
+
+.tab-button {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.tab-button:hover {
+  @apply transform scale-[1.02];
+}
+
+.tab-button:active {
+  @apply transform scale-[0.98];
 }
 
 /* Loading spinner */
