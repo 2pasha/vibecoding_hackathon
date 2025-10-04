@@ -1,7 +1,7 @@
 {
   "name": "eti-hr-chat-frontend",
   "version": "1.0.0",
-  "description": "React + TypeScript frontend for ETI HR Manual Chat",
+  "description": "React + TypeScript frontend for HR Manual Chat",
   "private": true,
   "type": "module",
   "scripts": {
