@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, ReactNode } from 'react';
-import { AuthState, AppState, Message, TabType } from '@/types';
+import { AuthState, AppState, Message, TabType, UserAuthState } from '@/types';
 import { apiClient } from '@/services/api';
 
 // Action types
@@ -14,6 +14,7 @@ type AppAction =
   | { type: 'SET_API_HEALTH'; payload: boolean }
   | { type: 'SET_MAX_TOKENS'; payload: number }
   | { type: 'SET_ACTIVE_TAB'; payload: TabType }
+  | { type: 'SET_USER_AUTH'; payload: UserAuthState }
   | { type: 'CLEAR_MESSAGES' }
   | AuthAction;
 
@@ -24,12 +25,18 @@ const initialAuthState: AuthState = {
   message: '',
 };
 
+const initialUserAuthState: UserAuthState = {
+  isAuthenticated: false,
+  user: null,
+};
+
 const initialState: AppState = {
   messages: [],
   isProcessing: false,
   apiHealthy: true, // Assume healthy for development
   maxTokens: 600,
   auth: initialAuthState,
+  userAuth: initialUserAuthState,
   activeTab: 'knowledge-qa',
 };
 
@@ -59,6 +66,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, maxTokens: action.payload };
     case 'SET_ACTIVE_TAB':
       return { ...state, activeTab: action.payload };
+    case 'SET_USER_AUTH':
+      return { ...state, userAuth: action.payload };
     case 'CLEAR_MESSAGES':
       return { ...state, messages: [] };
     case 'SET_TOKEN':
@@ -80,6 +89,8 @@ interface AppContextType {
   clearMessages: () => void;
   setMaxTokens: (tokens: number) => void;
   setActiveTab: (tab: TabType) => void;
+  login: (email: string, password: string) => void;
+  logout: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -174,6 +185,41 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_ACTIVE_TAB', payload: tab });
   };
 
+  const login = (idToken: string, password: string) => {
+    // Mock authentication - check for demo ID token
+    if (idToken === 'demo-token-ann-123') {
+      dispatch({
+        type: 'SET_USER_AUTH',
+        payload: {
+          isAuthenticated: true,
+          user: {
+            name: 'Ann',
+            email: 'ann@cheatix.com'
+          }
+        }
+      });
+    } else {
+      // For any other tokens, show as not authenticated
+      dispatch({
+        type: 'SET_USER_AUTH',
+        payload: {
+          isAuthenticated: false,
+          user: null
+        }
+      });
+    }
+  };
+
+  const logout = () => {
+    dispatch({
+      type: 'SET_USER_AUTH',
+      payload: {
+        isAuthenticated: false,
+        user: null
+      }
+    });
+  };
+
   const value: AppContextType = {
     state,
     dispatch,
@@ -183,6 +229,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     clearMessages,
     setMaxTokens,
     setActiveTab,
+    login,
+    logout,
   };
 
   return (
