@@ -43,7 +43,7 @@ export interface AuthState {
   message: string;
 }
 
-export type TabType = 'knowledge-qa' | 'skillsmith';
+export type TabType = 'knowledge-qa' | 'skillsmith' | 'team-memory';
 
 export interface AppState {
   messages: Message[];

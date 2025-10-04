@@ -1,4 +1,4 @@
-import { BookOpen, Wrench } from 'lucide-react';
+import { BookOpen, Wrench, Brain } from 'lucide-react';
 import { TabType } from '@/types';
 
 interface TabNavigationProps {
@@ -19,6 +19,12 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
       label: 'SkillSmith',
       icon: Wrench,
       description: 'AI-powered skill development and training'
+    },
+    {
+      id: 'team-memory' as TabType,
+      label: 'Team Memory Agent',
+      icon: Brain,
+      description: 'AI-powered team knowledge and memory'
     }
   ];
 
