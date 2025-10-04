@@ -1,3 +1,5 @@
+export type TabType = 'knowledge-qa' | 'skillsmith';
+
 // API Response Types
 export interface QueryRequest {
   query: string;
@@ -47,6 +49,7 @@ export interface AppState {
   messages: Message[];
   isProcessing: boolean;
   auth: AuthState;
+  activeTab: TabType;
 }
 
 // Component Props Types

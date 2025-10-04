@@ -110,7 +110,7 @@ test-chat/
 3. **Run data ingestion** (as specified in brief):
 
    ```bash
-   python scripts/ingest.py --pdf data/ETI_HR_Manual.pdf
+   python scripts/ingest.py --pdf data/HR_Manual.pdf
    ```
 
 4. **Start the API service**:
