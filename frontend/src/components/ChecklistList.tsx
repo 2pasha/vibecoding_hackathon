@@ -70,9 +70,28 @@ export function ChecklistList({ checklists, onCheckboxChange, onViewFull }: Chec
                           onChange={(e) => onCheckboxChange(checklist.id, categoryIndex, itemIndex, e.target.checked)}
                           className="w-3 h-3 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                         />
-                        <span className={`text-xs ${item.completed ? 'line-through text-gray-500' : 'text-gray-700'}`}>
-                          {typeof item.text === 'string' ? item.text : JSON.stringify(item.text)}
-                        </span>
+                        <div className={`text-xs ${item.completed ? 'line-through text-gray-500' : 'text-gray-700'}`}>
+                          {typeof item.text === 'string' ? (
+                            item.text.includes('\n• ') ? (
+                              <div>
+                                {item.text.split('\n• ').slice(0, 2).map((line, idx) => (
+                                  <div key={idx} className={idx === 0 ? '' : 'ml-3 text-xs text-gray-600'}>
+                                    {idx === 0 ? line : `• ${line}`}
+                                  </div>
+                                ))}
+                                {item.text.split('\n• ').length > 2 && (
+                                  <div className="ml-3 text-xs text-gray-500">
+                                    +{item.text.split('\n• ').length - 2} more sub-items
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              item.text
+                            )
+                          ) : (
+                            JSON.stringify(item.text)
+                          )}
+                        </div>
                       </label>
                     ))}
                     {category.items.length > 3 && (

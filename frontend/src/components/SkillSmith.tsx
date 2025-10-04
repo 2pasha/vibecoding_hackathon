@@ -11,6 +11,77 @@ import { ChecklistData, ChecklistCategory } from '@/types/checklist';
 type PDPState = 'not-logged-in' | 'ready' | 'generating' | 'result';
 type LoadingState = 'initial' | 'extended' | 'very-extended' | 'checking';
 
+// Helper function to parse sub-items from text patterns
+function parseSubItemsFromText(text: string): string {
+  // First, check for explicit sub-items array format
+  const subItemsArrayPattern = /^(.+?)\s*\(Sub-items:\s*\[\s*'([^']+)'(?:,\s*'([^']+)')*\s*\]\)$/i;
+  const subItemsArrayMatch = text.match(subItemsArrayPattern);
+  
+  if (subItemsArrayMatch) {
+    const mainItem = subItemsArrayMatch[1].trim();
+    const subItems = [];
+    
+    // Extract all quoted sub-items
+    const quotedItems = text.match(/'([^']+)'/g);
+    if (quotedItems) {
+      subItems.push(...quotedItems.map(item => item.replace(/'/g, '')));
+    }
+    
+    if (subItems.length > 0) {
+      return mainItem + '\n• ' + subItems.join('\n• ');
+    }
+  }
+  
+  // Check for time estimates in parentheses (these should NOT be converted to sub-items)
+  const timeEstimatePattern = /^(.+?)\s*\(Estimated time:\s*[^)]+\)$/i;
+  if (timeEstimatePattern.test(text)) {
+    return text; // Keep time estimates as-is
+  }
+  
+  // Check for other sub-item patterns
+  const subItemPatterns = [
+    // Pattern: "Main item (sub-item 1, sub-item 2, sub-item 3)" - but not time estimates
+    /^(.+?)\s*\(([^)]+)\)$/,
+    // Pattern: "Main item: sub-item 1, sub-item 2, sub-item 3"
+    /^(.+?):\s*(.+)$/,
+    // Pattern: "Main item - sub-item 1, sub-item 2, sub-item 3"
+    /^(.+?)\s*-\s*(.+)$/,
+    // Pattern: "Main item with sub-items: sub-item 1, sub-item 2"
+    /^(.+?)\s+with\s+sub-items?:\s*(.+)$/i,
+    // Pattern: "Main item including: sub-item 1, sub-item 2"
+    /^(.+?)\s+including:\s*(.+)$/i,
+    // Pattern: "Main item such as: sub-item 1, sub-item 2"
+    /^(.+?)\s+such\s+as:\s*(.+)$/i,
+  ];
+
+  for (const pattern of subItemPatterns) {
+    const match = text.match(pattern);
+    if (match) {
+      const mainItem = match[1].trim();
+      const subItemsText = match[2].trim();
+      
+      // Skip if it looks like a time estimate
+      if (subItemsText.toLowerCase().includes('estimated time') || 
+          subItemsText.toLowerCase().includes('time:') ||
+          subItemsText.match(/\d+\s*(month|week|day|hour)s?/i)) {
+        continue;
+      }
+      
+      // Split sub-items by common separators
+      const subItems = subItemsText
+        .split(/[,;]|and\s+/i)
+        .map(item => item.trim())
+        .filter(item => item.length > 0);
+      
+      if (subItems.length > 0) {
+        return mainItem + '\n• ' + subItems.join('\n• ');
+      }
+    }
+  }
+  
+  return text;
+}
+
 export function SkillSmith() {
   const { state } = useApp();
   const [pdpState, setPdpState] = useState<PDPState>('not-logged-in');
@@ -161,14 +232,88 @@ export function SkillSmith() {
         
         if (data.success && data.checklist) {
           // Parse the checklist data
-          const parsedCategories: ChecklistCategory[] = data.checklist.map((cat: any) => ({
-            category: cat.category,
-            items: cat.items.map((item: any, index: number) => ({
-              id: `${cat.category}_${index}`,
-              text: typeof item === 'string' ? item : JSON.stringify(item),
-              completed: false
-            }))
-          }));
+          const parsedCategories: ChecklistCategory[] = data.checklist.map((cat: any) => {
+            const items: any[] = [];
+            let itemIndex = 0;
+            
+            cat.items.forEach((item: any) => {
+              if (typeof item === 'string') {
+                // Regular string item
+                let text = parseSubItemsFromText(item);
+                items.push({
+                  id: `${cat.category}_${itemIndex}`,
+                  text: text,
+                  completed: false
+                });
+                itemIndex++;
+              } else if (item && typeof item === 'object') {
+                // Handle objects with 'item' and 'sub-items' structure
+                if (item.item && item['sub-items']) {
+                  let text = item.item;
+                  if (Array.isArray(item['sub-items']) && item['sub-items'].length > 0) {
+                    text += '\n• ' + item['sub-items'].join('\n• ');
+                  }
+                  text = parseSubItemsFromText(text);
+                  items.push({
+                    id: `${cat.category}_${itemIndex}`,
+                    text: text,
+                    completed: false
+                  });
+                  itemIndex++;
+                } else if (item['sub-category'] && item.items) {
+                  // Handle nested sub-category structure
+                  const subCategoryText = item['sub-category'];
+                  const subItems = Array.isArray(item.items) ? item.items : [];
+                  
+                  // Create main sub-category item
+                  items.push({
+                    id: `${cat.category}_${itemIndex}`,
+                    text: subCategoryText,
+                    completed: false
+                  });
+                  itemIndex++;
+                  
+                  // Add sub-items
+                  subItems.forEach((subItem: any) => {
+                    let subItemText = '';
+                    if (typeof subItem === 'string') {
+                      subItemText = parseSubItemsFromText(subItem);
+                    } else {
+                      subItemText = JSON.stringify(subItem);
+                    }
+                    
+                    items.push({
+                      id: `${cat.category}_${itemIndex}`,
+                      text: `• ${subItemText}`,
+                      completed: false
+                    });
+                    itemIndex++;
+                  });
+                } else {
+                  // Fallback for other object structures
+                  items.push({
+                    id: `${cat.category}_${itemIndex}`,
+                    text: JSON.stringify(item),
+                    completed: false
+                  });
+                  itemIndex++;
+                }
+              } else {
+                // Fallback for other types
+                items.push({
+                  id: `${cat.category}_${itemIndex}`,
+                  text: String(item),
+                  completed: false
+                });
+                itemIndex++;
+              }
+            });
+            
+            return {
+              category: cat.category,
+              items: items
+            };
+          });
 
           // Create new checklist data
           const newChecklist: ChecklistData = {
