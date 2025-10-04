@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { SettingsPanelProps } from '@/types';
 import { 
   Shield, 
@@ -6,15 +6,12 @@ import {
   XCircle, 
   AlertCircle, 
   RefreshCw, 
-  Settings,
-  Sliders
+  Settings
 } from 'lucide-react';
 
 export function SettingsPanel({ 
   auth, 
   onAuthChange, 
-  maxTokens, 
-  onMaxTokensChange, 
   apiHealthy, 
   onApiHealthCheck 
 }: SettingsPanelProps) {
@@ -130,51 +127,6 @@ export function SettingsPanel({
           </div>
         </div>
         
-        {/* Max Tokens Slider */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Sliders className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">Max tokens in response</span>
-          </div>
-          
-          <div className="space-y-2">
-            <input
-              type="range"
-              min="100"
-              max="1000"
-              step="50"
-              value={maxTokens}
-              onChange={(e) => onMaxTokensChange(Number(e.target.value))}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>100</span>
-              <span className="font-semibold">{maxTokens}</span>
-              <span>1000</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* About Section */}
-      <div className="space-y-3">
-        <h3 className="font-semibold text-sm">About</h3>
-        <div className="text-sm text-muted-foreground space-y-2">
-          <p>This chat interface allows you to ask questions about ETI HR policies and procedures.</p>
-          
-          <div>
-            <p className="font-semibold mb-1">Features:</p>
-            <ul className="list-disc list-inside space-y-1 ml-2">
-              <li>Hybrid search (BM25 + FAISS)</li>
-              <li>Accurate citations</li>
-              <li>Real-time responses</li>
-            </ul>
-          </div>
-          
-          <p className="text-xs">
-            <strong>Note:</strong> Answers are based strictly on the HR manual content.
-          </p>
-        </div>
       </div>
     </div>
   );

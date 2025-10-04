@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import { AppProvider, useApp } from '@/contexts/AppContext';
 import { ChatHistory } from '@/components/ChatHistory';
 import { ChatInput } from '@/components/ChatInput';
@@ -7,7 +6,7 @@ import { ExampleQuestions } from '@/components/ExampleQuestions';
 import { BookOpen, Trash2 } from 'lucide-react';
 
 function AppContent() {
-  const { state, validateToken, checkApiHealth, sendMessage, clearMessages, setMaxTokens } = useApp();
+  const { state, validateToken, checkApiHealth, sendMessage, clearMessages } = useApp();
 
   // Manual health check only when needed
 
@@ -46,8 +45,6 @@ function AppContent() {
               <SettingsPanel
                 auth={state.auth}
                 onAuthChange={handleAuthChange}
-                maxTokens={state.maxTokens}
-                onMaxTokensChange={setMaxTokens}
                 apiHealthy={state.apiHealthy}
                 onApiHealthCheck={checkApiHealth}
               />

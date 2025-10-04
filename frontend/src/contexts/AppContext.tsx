@@ -12,7 +12,6 @@ type AppAction =
   | { type: 'ADD_MESSAGE'; payload: Message }
   | { type: 'SET_PROCESSING'; payload: boolean }
   | { type: 'SET_API_HEALTH'; payload: boolean }
-  | { type: 'SET_MAX_TOKENS'; payload: number }
   | { type: 'CLEAR_MESSAGES' }
   | AuthAction;
 
@@ -27,7 +26,6 @@ const initialState: AppState = {
   messages: [],
   isProcessing: false,
   apiHealthy: true, // Assume healthy for development
-  maxTokens: 600,
   auth: initialAuthState,
 };
 
@@ -53,8 +51,6 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, isProcessing: action.payload };
     case 'SET_API_HEALTH':
       return { ...state, apiHealthy: action.payload };
-    case 'SET_MAX_TOKENS':
-      return { ...state, maxTokens: action.payload };
     case 'CLEAR_MESSAGES':
       return { ...state, messages: [] };
     case 'SET_TOKEN':
@@ -71,10 +67,9 @@ interface AppContextType {
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
   validateToken: (token: string) => Promise<void>;
-  checkApiHealth: () => Promise<void>;
+  checkApiHealth: () => Promise<boolean>;
   sendMessage: (content: string) => Promise<void>;
   clearMessages: () => void;
-  setMaxTokens: (tokens: number) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -107,12 +102,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const checkApiHealth = async () => {
+  const checkApiHealth = async (): Promise<boolean> => {
     try {
       const isHealthy = await apiClient.checkHealth();
       dispatch({ type: 'SET_API_HEALTH', payload: isHealthy });
+      return isHealthy;
     } catch (error) {
       dispatch({ type: 'SET_API_HEALTH', payload: false });
+      return false;
     }
   };
 
@@ -132,7 +129,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_PROCESSING', payload: true });
 
     try {
-      const response = await apiClient.askQuestion(content.trim(), state.maxTokens);
+      const response = await apiClient.askQuestion(content.trim(), 600);
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -161,10 +158,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'CLEAR_MESSAGES' });
   };
 
-  const setMaxTokens = (tokens: number) => {
-    dispatch({ type: 'SET_MAX_TOKENS', payload: tokens });
-  };
-
   const value: AppContextType = {
     state,
     dispatch,
@@ -172,7 +165,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     checkApiHealth,
     sendMessage,
     clearMessages,
-    setMaxTokens,
   };
 
   return (
