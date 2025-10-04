@@ -12,7 +12,7 @@ class ApiClient {
   private client: AxiosInstance;
   private baseURL: string;
 
-  constructor(baseURL: string = 'http://localhost:8080') {
+  constructor(baseURL: string = '/api') {
     this.baseURL = baseURL;
     this.client = axios.create({
       baseURL: this.baseURL,

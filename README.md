@@ -2,6 +2,31 @@
 
 A Retrieval-Augmented Generation (RAG) system for querying the ETI HR Policies and Procedures manual. This system uses hybrid search (BM25 + FAISS) and GPT-4o-mini to provide accurate answers with proper citations.
 
+## 🚀 Quick Start for Developers
+
+**For development with Docker (recommended):**
+```bash
+# 1. Clone and setup
+git clone <repository-url>
+cd test-chat
+
+# 2. Configure environment
+cp env.template .env
+# Edit .env with your OPENAI_API_KEY and API_TOKEN
+
+# 3. Start development environment
+chmod +x start-docker-dev.sh
+./start-docker-dev.sh
+```
+
+**Access the application:**
+- Main App: http://localhost:80
+- Frontend: http://localhost:3000  
+- Backend API: http://localhost:8080
+- API Docs: http://localhost:8080/docs
+
+📖 **For detailed setup instructions, see [DEVELOPER-GUIDE.md](./DEVELOPER-GUIDE.md)**
+
 ## Architecture
 
 - **Data Ingestion**: PDF parsing, chunking (800-1200 tokens), and indexing
