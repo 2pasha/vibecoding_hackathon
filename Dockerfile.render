@@ -63,7 +63,7 @@ COPY --from=backend-builder /app/app ./app/
 COPY --from=backend-builder /app/data ./data/
 
 # Copy built frontend from frontend builder
-COPY --from=frontend-builder /app/dist /var/www/html
+COPY --from=frontend-builder /app/frontend/dist /var/www/html
 
 # Create necessary directories
 RUN mkdir -p /var/data/index /var/log/nginx
