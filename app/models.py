@@ -64,3 +64,13 @@ class CourseGenerationResponse(BaseModel):
     success: bool
     message: str
     course_content: Optional[str] = None
+
+
+class ChecklistGenerationRequest(BaseModel):
+    generated_course: str
+
+
+class ChecklistGenerationResponse(BaseModel):
+    success: bool
+    message: str
+    checklist: Optional[List] = None

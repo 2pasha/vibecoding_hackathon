@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import Config
-from .models import QueryRequest, QueryResponse, IngestRequest, IngestResponse, HealthResponse, TokenValidationRequest, TokenValidationResponse, TeamMember, TeamResponse, UserTokenValidationRequest, UserTokenValidationResponse, CourseGenerationRequest, CourseGenerationResponse
+from .models import QueryRequest, QueryResponse, IngestRequest, IngestResponse, HealthResponse, TokenValidationRequest, TokenValidationResponse, TeamMember, TeamResponse, UserTokenValidationRequest, UserTokenValidationResponse, CourseGenerationRequest, CourseGenerationResponse, ChecklistGenerationRequest, ChecklistGenerationResponse
 from .index_manager import IndexManager
 from .response_generator import ResponseGenerator
 from .auth import verify_token, validate_api_token
@@ -290,6 +290,24 @@ async def generate_personalized_course(request: CourseGenerationRequest, user_da
         raise HTTPException(status_code=500, detail=f"Error generating course: {str(e)}")
 
 
+@app.post("/generate-checklist", response_model=ChecklistGenerationResponse)
+async def generate_checklist(request: ChecklistGenerationRequest, user_data: dict = Depends(verify_user_token)):
+    """Generate a checklist of actionable items from a previously generated course."""
+    try:
+        # Generate checklist from the course content
+        checklist = await response_generator.generate_checklist(request.generated_course)
+
+        return ChecklistGenerationResponse(
+            success=True,
+            message="Checklist generated successfully",
+            checklist=checklist
+        )
+
+    except Exception as e:
+        log_error("generate_checklist", str(e))
+        raise HTTPException(status_code=500, detail=f"Error generating checklist: {str(e)}")
+
+
 @app.get("/")
 async def root():
     return {
@@ -302,6 +320,7 @@ async def root():
             "POST /validate-token": "Validate API token",
             "POST /validate-user-token": "Validate user ID token and return user data",
             "POST /generate-course": "Generate personalized learning course (requires Bearer token)",
+            "POST /generate-checklist": "Generate checklist from course content (requires Bearer token)",
             "GET /team": "Get list of team members",
             "GET /healthz": "Health check"
         }

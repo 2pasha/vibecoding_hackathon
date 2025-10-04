@@ -238,3 +238,129 @@ Generate the complete roadmap in clean HTML content now:"""
         )
         
         return response.choices[0].message.content.strip()
+    
+    async def generate_checklist(self, course_content: str) -> List:
+        """Generate a checklist of actionable items from course content."""
+        checklist_prompt = f"""You are an expert learning and development specialist. Based on the provided course content, create a comprehensive checklist of actionable items that a user needs to complete to reach their learning goals.
+
+Course Content:
+{course_content}
+
+Please generate a checklist in the following JSON format:
+{{
+  "checklist": [
+    {{
+      "category": "Category Name",
+      "items": [
+        "Specific actionable item 1",
+        "Specific actionable item 2",
+        "Specific actionable item 3"
+      ]
+    }},
+    {{
+      "category": "Another Category",
+      "items": [
+        "Another specific item",
+        "Another specific item"
+      ]
+    }}
+  ]
+}}
+
+Requirements:
+1. Break down the course into logical categories (e.g., "Foundation Skills", "Advanced Topics", "Practical Applications", "Assessment & Review")
+2. Each item should be specific, actionable, and measurable
+3. Include both learning activities and practical exercises
+4. Consider the progression from basic to advanced
+5. Include time estimates where relevant
+6. Make items concrete and achievable
+7. Support nested sub-items where appropriate (use arrays within arrays for sub-checks)
+
+Generate a comprehensive checklist that covers all aspects of the course content:"""
+
+        messages = [
+            {"role": "system", "content": "You are an expert learning and development specialist who creates actionable, structured learning checklists from course content."},
+            {"role": "user", "content": checklist_prompt}
+        ]
+        
+        response = self.client.chat.completions.create(
+            model=Config.CHAT_MODEL,
+            messages=messages,
+            temperature=0.3,  # Lower temperature for more structured output
+            max_tokens=3000,  # Sufficient tokens for comprehensive checklist
+            stream=False,
+            timeout=60.0
+        )
+        
+        content = response.choices[0].message.content.strip()
+        
+        # Try to parse the JSON response
+        import json
+        try:
+            # Extract JSON from the response (in case there's extra text)
+            json_start = content.find('{')
+            json_end = content.rfind('}') + 1
+            if json_start != -1 and json_end > json_start:
+                json_content = content[json_start:json_end]
+                parsed_data = json.loads(json_content)
+                return parsed_data.get("checklist", [])
+            else:
+                # Fallback: create a simple checklist structure
+                return self._create_fallback_checklist(content)
+        except json.JSONDecodeError:
+            # Fallback: create a simple checklist structure
+            return self._create_fallback_checklist(content)
+    
+    def _create_fallback_checklist(self, content: str) -> List:
+        """Create a fallback checklist structure if JSON parsing fails."""
+        # Simple fallback: create basic checklist items
+        lines = content.split('\n')
+        checklist = []
+        current_category = "Learning Tasks"
+        current_items = []
+        
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+                
+            # Check if line looks like a category header
+            if (line.startswith('#') or 
+                line.isupper() or 
+                line.endswith(':') or
+                'category' in line.lower() or
+                'section' in line.lower()):
+                if current_items:
+                    checklist.append({
+                        "category": current_category,
+                        "items": current_items
+                    })
+                current_category = line.replace('#', '').replace(':', '').strip()
+                current_items = []
+            else:
+                # Clean up the line and add as item
+                item = line.replace('-', '').replace('*', '').replace('•', '').strip()
+                if item and len(item) > 5:  # Only add substantial items
+                    current_items.append(item)
+        
+        # Add the last category
+        if current_items:
+            checklist.append({
+                "category": current_category,
+                "items": current_items
+            })
+        
+        # If no structured content found, create a basic checklist
+        if not checklist:
+            checklist = [{
+                "category": "Course Completion Tasks",
+                "items": [
+                    "Review the complete course content",
+                    "Identify key learning objectives",
+                    "Create a personal study schedule",
+                    "Complete all practical exercises",
+                    "Assess your progress regularly"
+                ]
+            }]
+        
+        return checklist
