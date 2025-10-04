@@ -1,44 +1,90 @@
+# Multi-stage Dockerfile for Render deployment
+# This Dockerfile builds both the backend API and frontend, then serves them with nginx
 
-    FROM caddy:2-alpine AS caddybin
+# Stage 1: Build Frontend
+FROM node:18-alpine AS frontend-builder
 
-    FROM python:3.11-slim
-    
-    WORKDIR /app
-    
-    RUN apt-get update && apt-get install -y --no-install-recommends \
-        build-essential \
-        curl \
-        ca-certificates \
-        tesseract-ocr \
-        tesseract-ocr-eng \
-      && rm -rf /var/lib/apt/lists/*
-    
-    COPY --from=caddybin /usr/bin/caddy /usr/bin/caddy
-    
-    COPY requirements.txt .
-    RUN pip install --no-cache-dir -r requirements.txt
-    
-    COPY scripts/ ./scripts/
-    COPY app/ ./app/
-    COPY data/ ./data/
-    
-    RUN mkdir -p /var/data/index
-    
-    # ---- ENV ----
-    ENV PYTHONPATH=/app
-    ENV DATA_DIR=/var/data
-    ENV INDEX_DIR=/var/data/index
-    ENV CHAT_MODEL=gpt-4o-mini
-    ENV EMBEDDING_MODEL=text-embedding-3-large
-    
-    ENV API_BASE_URL=/api
-    
-    COPY Caddyfile /app/Caddyfile
-    COPY docker-entrypoint.render.sh /app/entrypoint.sh
-    RUN chmod +x /app/entrypoint.sh
-    
-    HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD \
-      curl -fsS "http://127.0.0.1:${PORT:-7860}/healthz" || exit 1
-    
-    ENTRYPOINT ["/app/entrypoint.sh"]
-    
+WORKDIR /app/frontend
+
+# Copy frontend package files
+COPY frontend/package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy frontend source code
+COPY frontend/ .
+
+# Build the frontend
+RUN npm run build
+
+# Stage 2: Build Backend
+FROM python:3.11-slim AS backend-builder
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy backend source code
+COPY scripts/ ./scripts/
+COPY app/ ./app/
+COPY data/ ./data/
+
+# Stage 3: Production Image
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    nginx \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Python dependencies from backend builder
+COPY --from=backend-builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=backend-builder /usr/local/bin /usr/local/bin
+
+# Copy backend application
+COPY --from=backend-builder /app/scripts ./scripts/
+COPY --from=backend-builder /app/app ./app/
+COPY --from=backend-builder /app/data ./data/
+
+# Copy built frontend from frontend builder
+COPY --from=frontend-builder /app/dist /var/www/html
+
+# Create necessary directories
+RUN mkdir -p /var/data/index /var/log/nginx
+
+# Set environment variables for Render
+ENV PYTHONPATH=/app
+ENV DATA_DIR=/var/data
+ENV INDEX_DIR=/var/data/index
+ENV CHAT_MODEL=gpt-4o-mini
+ENV EMBEDDING_MODEL=text-embedding-3-large
+ENV PORT=10000
+
+# Copy nginx configuration for production
+COPY nginx.render.conf /etc/nginx/sites-available/default
+
+# Copy startup script
+COPY docker-entrypoint.render.sh .
+RUN chmod +x docker-entrypoint.render.sh
+
+# Expose the port that Render will use
+EXPOSE 10000
+
+# Use the startup script
+CMD ["./docker-entrypoint.render.sh"]
