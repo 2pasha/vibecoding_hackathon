@@ -163,9 +163,9 @@ export function SkillSmith() {
           // Parse the checklist data
           const parsedCategories: ChecklistCategory[] = data.checklist.map((cat: any) => ({
             category: cat.category,
-            items: cat.items.map((item: string, index: number) => ({
+            items: cat.items.map((item: any, index: number) => ({
               id: `${cat.category}_${index}`,
-              text: item,
+              text: typeof item === 'string' ? item : JSON.stringify(item),
               completed: false
             }))
           }));

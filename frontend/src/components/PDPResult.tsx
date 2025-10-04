@@ -110,8 +110,23 @@ export function PDPResult({
                         </span>
                       </div>
                       <div className="text-sm text-gray-600">
-                        <p>Level: {skill.level}</p>
-                        <p>Timeline: {skill.timeline}</p>
+                        <p>Level: {typeof skill.level === 'string' ? skill.level : JSON.stringify(skill.level)}</p>
+                        <p>Timeline: {typeof skill.timeline === 'string' ? skill.timeline : JSON.stringify(skill.timeline)}</p>
+                        {skill.risk && (
+                          <p>Risk: {typeof skill.risk === 'string' ? skill.risk : JSON.stringify(skill.risk)}</p>
+                        )}
+                        {skill.mitigation && (
+                          <p>Mitigation: {typeof skill.mitigation === 'string' ? skill.mitigation : JSON.stringify(skill.mitigation)}</p>
+                        )}
+                        {skill.actions && (
+                          <p>Actions: {typeof skill.actions === 'string' ? skill.actions : JSON.stringify(skill.actions)}</p>
+                        )}
+                        {skill.currentLevel && (
+                          <p>Current Level: {typeof skill.currentLevel === 'string' ? skill.currentLevel : JSON.stringify(skill.currentLevel)}</p>
+                        )}
+                        {skill.targetLevel && (
+                          <p>Target Level: {typeof skill.targetLevel === 'string' ? skill.targetLevel : JSON.stringify(skill.targetLevel)}</p>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -122,10 +137,10 @@ export function PDPResult({
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Career Goals</h3>
                 <ul className="space-y-2">
-                  {pdpResult.goals?.map((goal: string, index: number) => (
+                  {pdpResult.goals?.map((goal: any, index: number) => (
                     <li key={index} className="flex items-center gap-2 text-gray-700">
                       <Target className="h-4 w-4 text-purple-500" />
-                      <span>{goal}</span>
+                      <span>{typeof goal === 'string' ? goal : JSON.stringify(goal)}</span>
                     </li>
                   ))}
                 </ul>
@@ -135,10 +150,10 @@ export function PDPResult({
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Action Plan</h3>
                 <ul className="space-y-2">
-                  {pdpResult.actionPlan?.map((action: string, index: number) => (
+                  {pdpResult.actionPlan?.map((action: any, index: number) => (
                     <li key={index} className="flex items-center gap-2 text-gray-700">
                       <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span>{action}</span>
+                      <span>{typeof action === 'string' ? action : JSON.stringify(action)}</span>
                     </li>
                   ))}
                 </ul>
@@ -149,10 +164,10 @@ export function PDPResult({
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Learning Resources</h3>
                   <ul className="space-y-2">
-                    {pdpResult.resources.map((resource: string, index: number) => (
+                    {pdpResult.resources.map((resource: any, index: number) => (
                       <li key={index} className="flex items-center gap-2 text-gray-700">
                         <BookOpen className="h-4 w-4 text-blue-500" />
-                        <span>{resource}</span>
+                        <span>{typeof resource === 'string' ? resource : JSON.stringify(resource)}</span>
                       </li>
                     ))}
                   </ul>
@@ -166,7 +181,7 @@ export function PDPResult({
                   <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                     <div className="flex items-center gap-2 text-green-800">
                       <Clock className="h-4 w-4" />
-                      <span className="font-medium">{pdpResult.timeline}</span>
+                      <span className="font-medium">{typeof pdpResult.timeline === 'string' ? pdpResult.timeline : JSON.stringify(pdpResult.timeline)}</span>
                     </div>
                   </div>
                 </div>
@@ -177,7 +192,7 @@ export function PDPResult({
           {/* User Input Display */}
           <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
             <h4 className="font-medium text-blue-900 mb-2">Your Input:</h4>
-            <p className="text-blue-800 text-sm">{pdpResult.userInput || userInput}</p>
+            <p className="text-blue-800 text-sm">{typeof (pdpResult.userInput || userInput) === 'string' ? (pdpResult.userInput || userInput) : JSON.stringify(pdpResult.userInput || userInput)}</p>
           </div>
 
           {/* Generate Checklist Button */}
@@ -241,7 +256,7 @@ export function PDPResult({
                                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                 />
                                 <span className={`text-sm ${item.completed ? 'line-through text-gray-500' : 'text-gray-700'}`}>
-                                  {item.text}
+                                  {typeof item.text === 'string' ? item.text : JSON.stringify(item.text)}
                                 </span>
                               </label>
                             ))}
