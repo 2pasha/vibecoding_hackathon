@@ -348,12 +348,13 @@ Requirements:
 4. Consider the progression from basic to advanced
 5. Include time estimates where relevant
 6. Make items concrete and achievable
-7. Support nested sub-items where appropriate (use arrays within arrays for sub-checks)
+7. IMPORTANT: Use ONLY flat structure - NO nested sub-items, NO sub-categories, NO objects within items array
+8. Each item in the items array must be a simple string, not an object or nested structure
 
 Generate a comprehensive checklist that covers all aspects of the course content:"""
 
         messages = [
-            {"role": "system", "content": "You are an expert learning and development specialist who creates actionable, structured learning checklists from course content."},
+            {"role": "system", "content": "You are an expert learning and development specialist who creates actionable, structured learning checklists from course content. Always use a flat structure with no nested sub-items or sub-categories."},
             {"role": "user", "content": checklist_prompt}
         ]
         
@@ -377,13 +378,57 @@ Generate a comprehensive checklist that covers all aspects of the course content
             if json_start != -1 and json_end > json_start:
                 json_content = content[json_start:json_end]
                 parsed_data = json.loads(json_content)
-                return parsed_data.get("checklist", [])
+                checklist = parsed_data.get("checklist", [])
+                # Ensure flat structure - flatten any nested items
+                return self._flatten_checklist(checklist)
             else:
                 # Fallback: create a simple checklist structure
                 return self._create_fallback_checklist(content)
         except json.JSONDecodeError:
             # Fallback: create a simple checklist structure
             return self._create_fallback_checklist(content)
+    
+    def _flatten_checklist(self, checklist: List) -> List:
+        """Flatten any nested checklist structures to ensure only flat structure."""
+        flattened = []
+        for category in checklist:
+            if isinstance(category, dict) and "category" in category and "items" in category:
+                flat_category = {
+                    "category": category["category"],
+                    "items": []
+                }
+                
+                for item in category["items"]:
+                    if isinstance(item, str):
+                        # Simple string item - add directly
+                        flat_category["items"].append(item)
+                    elif isinstance(item, dict):
+                        # Object item - convert to string or extract relevant info
+                        if "sub-category" in item:
+                            # Add sub-category as a separate item
+                            flat_category["items"].append(f"Sub-category: {item['sub-category']}")
+                            # Add sub-items as regular items
+                            if "items" in item:
+                                for sub_item in item["items"]:
+                                    if isinstance(sub_item, str):
+                                        flat_category["items"].append(f"  - {sub_item}")
+                        else:
+                            # Convert other objects to string representation
+                            flat_category["items"].append(str(item))
+                    elif isinstance(item, list):
+                        # List item - flatten and add each element
+                        for sub_item in item:
+                            if isinstance(sub_item, str):
+                                flat_category["items"].append(sub_item)
+                            else:
+                                flat_category["items"].append(str(sub_item))
+                    else:
+                        # Other types - convert to string
+                        flat_category["items"].append(str(item))
+                
+                flattened.append(flat_category)
+        
+        return flattened
     
     def _create_fallback_checklist(self, content: str) -> List:
         """Create a fallback checklist structure if JSON parsing fails."""
