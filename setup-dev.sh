@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# ETI HR Manual Chat - Development Setup Script
+# HR Manual Chat - Development Setup Script
 
 set -e
 
-echo "🚀 Setting up ETI HR Manual Chat Development Environment"
+echo "🚀 Setting up HR Manual Chat Development Environment"
 
 # Check if .env file exists
 if [ ! -f .env ]; then

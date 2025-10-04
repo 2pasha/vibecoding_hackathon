@@ -44,3 +44,13 @@ class TeamMember(BaseModel):
 
 class TeamResponse(BaseModel):
     members: List[TeamMember]
+
+
+class UserTokenValidationRequest(BaseModel):
+    token: str
+
+
+class UserTokenValidationResponse(BaseModel):
+    success: bool
+    message: str
+    user_data: Optional[dict] = None

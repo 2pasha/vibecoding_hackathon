@@ -26,7 +26,7 @@ def on_input_change():
         st.session_state.is_processing = True
 
 st.set_page_config(
-    page_title="ETI HR Manual Chat",
+    page_title="HR Manual Chat",
     page_icon="📖",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -237,8 +237,8 @@ def main():
         st.session_state.token_message = ""
 
     st.markdown('<div class="main-header">', unsafe_allow_html=True)
-    st.title("📖 ETI HR Manual Chat")
-    st.markdown("Ask questions about ETI HR policies and procedures")
+    st.title("📖 HR Manual Chat")
+    st.markdown("Ask questions about HR policies and procedures")
     st.markdown('</div>', unsafe_allow_html=True)
     
     with st.sidebar:
@@ -311,7 +311,7 @@ def main():
         
         st.header("ℹ️ About")
         st.markdown("""
-        This chat interface allows you to ask questions about ETI HR policies and procedures.
+        This chat interface allows you to ask questions about HR policies and procedures.
         
         **Features:**
         - Hybrid search (BM25 + FAISS)
@@ -346,7 +346,7 @@ def main():
         input_key = "question_input"
     
     question = st.text_input(
-        "Ask a question about ETI HR policies:",
+        "Ask a question about HR policies:",
         value=default_value,
         key=input_key,
         placeholder="e.g., What is the vacation policy?" if st.session_state.token_valid else "Please validate your API token first",
@@ -427,7 +427,7 @@ def main():
     st.markdown("---")
     st.markdown(
         "Built with ❤️ using Streamlit, FastAPI, and OpenAI | "
-        "ETI HR Manual RAG System v1.0"
+        "HR Manual RAG System v1.0"
     )
 
 

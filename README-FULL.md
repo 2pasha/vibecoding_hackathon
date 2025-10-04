@@ -1,6 +1,6 @@
-# ETI HR Manual Chat System
+# HR Manual Chat System
 
-A modern Retrieval-Augmented Generation (RAG) system for querying ETI HR policies and procedures. Built with FastAPI backend and React frontend.
+A modern Retrieval-Augmented Generation (RAG) system for querying HR policies and procedures. Built with FastAPI backend and React frontend.
 
 ## 🚀 Quick Start
 
@@ -209,7 +209,7 @@ npm test
 
 ## 📄 License
 
-This project is part of the ETI HR Manual RAG System.
+This project is part of the HR Manual RAG System.
 
 ## 🆘 Support
 
