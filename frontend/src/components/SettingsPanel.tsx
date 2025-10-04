@@ -160,7 +160,7 @@ export function SettingsPanel({
       <div className="space-y-3">
         <h3 className="font-semibold text-sm">About</h3>
         <div className="text-sm text-muted-foreground space-y-2">
-          <p>This chat interface allows you to ask questions about ETI HR policies and procedures.</p>
+          <p>This chat interface allows you to ask questions about HR policies and procedures.</p>
           
           <div>
             <p className="font-semibold mb-1">Features:</p>

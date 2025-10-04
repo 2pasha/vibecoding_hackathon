@@ -83,7 +83,7 @@ class PDFProcessor:
         is_bold = bool(font_flags & 16)
         is_large_font = font_size > 11
         
-        # Enhanced heading patterns for ETI HR manual
+        # Enhanced heading patterns for HR manual
         heading_patterns = [
             r'^\d+\.\d+\s+',           # 4.2, 1.1, etc.
             r'^SECTION\s+\d+',         # SECTION 1, SECTION 2, etc.
