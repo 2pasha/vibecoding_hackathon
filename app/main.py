@@ -1,16 +1,59 @@
 import os
 import json
 import time
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import Config
-from .models import QueryRequest, QueryResponse, IngestRequest, IngestResponse, HealthResponse, TokenValidationRequest, TokenValidationResponse, TeamMember, TeamResponse, UserTokenValidationRequest, UserTokenValidationResponse
+from .models import QueryRequest, QueryResponse, IngestRequest, IngestResponse, HealthResponse, TokenValidationRequest, TokenValidationResponse, TeamMember, TeamResponse, UserTokenValidationRequest, UserTokenValidationResponse, CourseGenerationRequest, CourseGenerationResponse
 from .index_manager import IndexManager
 from .response_generator import ResponseGenerator
 from .auth import verify_token, validate_api_token
 from .logging_utils import log_query, log_ingestion_start, log_ingestion_end, log_error, hash_query
 from .cache import response_cache
+
+
+async def verify_user_token(authorization: str = Header(None)) -> dict:
+    """Verify user token from Authorization header and return user data."""
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header required")
+
+    # Extract token from "Bearer <token>" format
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid authorization format. Use 'Bearer <token>'")
+
+    token = authorization[7:]  # Remove "Bearer " prefix
+
+    try:
+        # Read team data from JSON file
+        team_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "team.json")
+
+        with open(team_file_path, 'r', encoding='utf-8') as f:
+            team_data = json.load(f)
+
+        # Find user by API token
+        user = None
+        for member in team_data:
+            if member["api_token"] == token:
+                user = member
+                break
+
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+        # Return user data (excluding api_token for security)
+        user_data = {k: v for k, v in user.items() if k != "api_token"}
+        return user_data
+
+    except FileNotFoundError:
+        raise HTTPException(status_code=500, detail="Team data file not found")
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Invalid JSON in team data file")
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 401)
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error validating user token: {str(e)}")
 
 
 def create_app() -> FastAPI:
@@ -218,6 +261,35 @@ async def get_team_members():
         raise HTTPException(status_code=500, detail=f"Error reading team data: {str(e)}")
 
 
+@app.post("/generate-course", response_model=CourseGenerationResponse)
+async def generate_personalized_course(request: CourseGenerationRequest, user_data: dict = Depends(verify_user_token)):
+    """Generate a personalized learning course based on user's current skills and learning goals."""
+    try:
+        # Build context for OpenAI based on user's current skills and position
+        user_context = f"""
+        User Profile:
+        - Name: {user_data['name']}
+        - Position: {user_data['position']}
+        - Current Hard Skills: {', '.join(user_data['hard_skills'])}
+        - Current Soft Skills: {', '.join(user_data['soft_skills'])}
+
+        Learning Goal: {request.learning_goal}
+        """
+
+        # Generate personalized course using OpenAI
+        course_content = await response_generator.generate_course(user_context, request.learning_goal)
+
+        return CourseGenerationResponse(
+            success=True,
+            message="Course generated successfully",
+            course_content=course_content
+        )
+
+    except Exception as e:
+        log_error("generate_course", str(e))
+        raise HTTPException(status_code=500, detail=f"Error generating course: {str(e)}")
+
+
 @app.get("/")
 async def root():
     return {
@@ -229,6 +301,7 @@ async def root():
             "POST /ingest": "Rebuild indexes from PDF (requires Bearer token)",
             "POST /validate-token": "Validate API token",
             "POST /validate-user-token": "Validate user ID token and return user data",
+            "POST /generate-course": "Generate personalized learning course (requires Bearer token)",
             "GET /team": "Get list of team members",
             "GET /healthz": "Health check"
         }
