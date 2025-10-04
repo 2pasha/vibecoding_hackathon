@@ -72,10 +72,27 @@ function AppContent() {
               </button>
               
               {state.userAuth.isAuthenticated ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-700">
-                    Hi, {state.userAuth.user?.name}
-                  </span>
+                <div className="flex items-center gap-3">
+                  {/* User Profile Image */}
+                  <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-blue-200">
+                    <img 
+                      src={state.userAuth.user?.photo_url || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'} 
+                      alt={state.userAuth.user?.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  
+                  {/* User Info */}
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-700 leading-tight">
+                      Hi, {state.userAuth.user?.name}
+                    </span>
+                    <span className="text-xs text-gray-500 leading-tight">
+                      {state.userAuth.user?.position}
+                    </span>
+                  </div>
+                  
+                  {/* Logout Button */}
                   <button 
                     onClick={logout}
                     className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
