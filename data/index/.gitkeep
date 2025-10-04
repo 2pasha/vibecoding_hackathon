@@ -1,0 +1,2 @@
+# This file ensures the index directory is tracked by Git
+# Index files (metadata.json, bm25_index.pkl, faiss_index.index, embeddings.npy) will be generated here

@@ -1,0 +1,44 @@
+
+    FROM caddy:2-alpine AS caddybin
+
+    FROM python:3.11-slim
+    
+    WORKDIR /app
+    
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        curl \
+        ca-certificates \
+        tesseract-ocr \
+        tesseract-ocr-eng \
+      && rm -rf /var/lib/apt/lists/*
+    
+    COPY --from=caddybin /usr/bin/caddy /usr/bin/caddy
+    
+    COPY requirements.txt .
+    RUN pip install --no-cache-dir -r requirements.txt
+    
+    COPY scripts/ ./scripts/
+    COPY app/ ./app/
+    COPY data/ ./data/
+    
+    RUN mkdir -p /var/data/index
+    
+    # ---- ENV ----
+    ENV PYTHONPATH=/app
+    ENV DATA_DIR=/var/data
+    ENV INDEX_DIR=/var/data/index
+    ENV CHAT_MODEL=gpt-4o-mini
+    ENV EMBEDDING_MODEL=text-embedding-3-large
+    
+    ENV API_BASE_URL=/api
+    
+    COPY Caddyfile /app/Caddyfile
+    COPY docker-entrypoint.render.sh /app/entrypoint.sh
+    RUN chmod +x /app/entrypoint.sh
+    
+    HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD \
+      curl -fsS "http://127.0.0.1:${PORT:-7860}/healthz" || exit 1
+    
+    ENTRYPOINT ["/app/entrypoint.sh"]
+    

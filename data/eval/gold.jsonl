@@ -1,0 +1,50 @@
+{"question": "What is the vacation policy?", "expected_sections": ["ATTENDANCE AND LEAVE", "Annual", "Leave", "4.2"], "expected_pages": [71, 72, 73, 74, 75]}
+{"question": "How do I request time off?", "expected_sections": ["ATTENDANCE AND LEAVE", "Annual", "Leave", "Procedure"], "expected_pages": [71, 72, 73, 74, 75]}
+{"question": "What is the sick leave policy?", "expected_sections": ["ATTENDANCE AND LEAVE", "Sick", "Leave", "4.3"], "expected_pages": [74, 75, 76]}
+{"question": "What is the maternity leave policy?", "expected_sections": ["ATTENDANCE AND LEAVE", "Maternity", "4.4"], "expected_pages": [76, 77, 78]}
+{"question": "What is the attendance and working hours policy?", "expected_sections": ["ATTENDANCE AND LEAVE", "Attendance", "Working", "Hours", "4.1"], "expected_pages": [66, 67, 68, 69, 70]}
+{"question": "How is performance evaluated?", "expected_sections": ["PERFORMANCE MANAGEMENT", "Performance", "7.1"], "expected_pages": [131, 132, 133]}
+{"question": "What benefits are offered?", "expected_sections": ["COMPENSATION", "BENEFITS", "Benefits", "WELFARE", "Employee", "Welfare", "10.1"], "expected_pages": [89, 90, 97, 98, 99, 207, 208]}
+{"question": "What is the termination policy?", "expected_sections": ["CESSATION", "EMPLOYMENT", "Termination", "Voluntary", "Involuntary", "11.1"], "expected_pages": [219, 220, 221, 222]}
+{"question": "What are the disciplinary procedures?", "expected_sections": ["EMPLOYEE RELATIONS", "Disciplinary", "6.2"], "expected_pages": [117, 118, 119]}
+{"question": "What is the probationary period?", "expected_sections": ["EMPLOYMENT", "ORIENTATION", "Probation", "Probationary", "Principles", "1.1"], "expected_pages": [38, 39, 40, 41, 42]}
+{"question": "What is the annual leave entitlement?", "expected_sections": ["ATTENDANCE AND LEAVE", "Annual", "Leave", "4.2"], "expected_pages": [71, 72, 73]}
+{"question": "Can I carry over unused vacation days?", "expected_sections": ["ATTENDANCE AND LEAVE", "Annual", "Leave", "carryover"], "expected_pages": [71, 72]}
+{"question": "What happens if I'm sick for more than one day?", "expected_sections": ["ATTENDANCE AND LEAVE", "Sick", "Leave", "certificate"], "expected_pages": [74, 75, 76]}
+{"question": "How long is maternity leave?", "expected_sections": ["ATTENDANCE AND LEAVE", "Maternity", "duration"], "expected_pages": [76, 77]}
+{"question": "What are the workplace conduct standards?", "expected_sections": ["GENERAL WORK CONDITIONS", "Conduct", "Standards", "2.1"], "expected_pages": [46, 47, 48]}
+{"question": "What are the hours of work and attendance requirements?", "expected_sections": ["ATTENDANCE AND LEAVE", "Hours", "Work", "Attendance", "4.1"], "expected_pages": [66, 67, 68]}
+{"question": "What is the overtime policy?", "expected_sections": ["ATTENDANCE AND LEAVE", "Hours", "overtime"], "expected_pages": [66, 67, 68, 69]}
+{"question": "What is the employee welfare and harassment policy?", "expected_sections": ["EMPLOYEE WELFARE", "Harassment", "Policy", "5.12"], "expected_pages": [112, 113, 114]}
+{"question": "What is the drug and alcohol policy?", "expected_sections": ["GENERAL WORK CONDITIONS", "Drug", "2.4"], "expected_pages": [53, 54]}
+{"question": "What employee assistance programs are available?", "expected_sections": ["EMPLOYEE WELFARE", "Employee", "Assistance", "Programs", "5.2"], "expected_pages": [88, 89, 90]}
+{"question": "What is the learning and development framework?", "expected_sections": ["LEARNING AND DEVELOPMENT", "Framework", "8.1"], "expected_pages": [149, 150, 151]}
+{"question": "What is the performance review process?", "expected_sections": ["PERFORMANCE MANAGEMENT", "Review", "Process"], "expected_pages": [131, 132, 133, 134]}
+{"question": "How often are performance reviews conducted?", "expected_sections": ["PERFORMANCE MANAGEMENT", "Frequency", "Review"], "expected_pages": [131, 132]}
+{"question": "What is the performance management system?", "expected_sections": ["PERFORMANCE MANAGEMENT", "System", "7.1"], "expected_pages": [131, 132, 133]}
+{"question": "How is my salary determined?", "expected_sections": ["COMPENSATION", "Salary", "Structure", "10.2"], "expected_pages": [198, 199, 200]}
+{"question": "When do I get salary increases?", "expected_sections": ["COMPENSATION", "Salary", "Increases"], "expected_pages": [198, 199, 200]}
+{"question": "What health insurance benefits do I have?", "expected_sections": ["EMPLOYEE WELFARE", "Health", "Insurance"], "expected_pages": [86, 87, 88]}
+{"question": "What employee benefits are provided?", "expected_sections": ["COMPENSATION", "BENEFITS", "Employee", "Welfare"], "expected_pages": [204, 205, 206]}
+{"question": "What retirement benefits are available?", "expected_sections": ["COMPENSATION", "BENEFITS", "Retirement"], "expected_pages": [204, 205, 206]}
+{"question": "Can I resign with immediate effect?", "expected_sections": ["CESSATION", "EMPLOYMENT", "Resignation", "Notice"], "expected_pages": [226, 227, 228]}
+{"question": "What notice period is required for resignation?", "expected_sections": ["CESSATION", "EMPLOYMENT", "Resignation", "Notice"], "expected_pages": [226, 227, 228]}
+{"question": "What is the employee separation process?", "expected_sections": ["CESSATION", "EMPLOYMENT", "Separation", "11.1"], "expected_pages": [213, 214]}
+{"question": "How do I file a grievance?", "expected_sections": ["EMPLOYEE RELATIONS", "Grievance", "6.3"], "expected_pages": [119, 120, 121]}
+{"question": "What constitutes misconduct?", "expected_sections": ["EMPLOYEE RELATIONS", "Misconduct", "Disciplinary"], "expected_pages": [117, 118, 119]}
+{"question": "Can I be terminated without cause?", "expected_sections": ["CESSATION", "EMPLOYMENT", "Termination", "Involuntary"], "expected_pages": [219, 220, 221]}
+{"question": "What is the retrenchment procedure?", "expected_sections": ["CESSATION", "EMPLOYMENT", "Retrenchment", "Procedure", "11.5"], "expected_pages": [231, 232, 233]}
+{"question": "How do I request study leave?", "expected_sections": ["ATTENDANCE AND LEAVE", "Study", "Leave"], "expected_pages": [78, 79, 80]}
+{"question": "What is the compassionate and bereavement leave policy?", "expected_sections": ["ATTENDANCE AND LEAVE", "Compassionate", "Bereavement", "Leave", "Policy"], "expected_pages": [78, 79, 80]}
+{"question": "Can I work from home?", "expected_sections": ["GENERAL WORK CONDITIONS", "Remote", "Work"], "expected_pages": [46, 47, 48]}
+{"question": "What are the general work conditions?", "expected_sections": ["GENERAL WORK CONDITIONS", "Work", "Conditions", "2.1"], "expected_pages": [46, 47, 48]}
+{"question": "What is the workplace violence policy?", "expected_sections": ["EMPLOYEE WELFARE", "Workplace", "Violence", "Policy", "5.10"], "expected_pages": [108, 109, 110]}
+{"question": "What are the information management and confidentiality policies?", "expected_sections": ["GENERAL WORK CONDITIONS", "Information", "Management", "Confidentiality", "2.8"], "expected_pages": [58, 59]}
+{"question": "What are the personnel record management procedures?", "expected_sections": ["PERSONNEL RECORDS", "Management", "Procedures", "3.1"], "expected_pages": [61, 62]}
+{"question": "What is the personnel records management policy?", "expected_sections": ["PERSONNEL RECORDS", "Management", "Policy", "3.1"], "expected_pages": [61, 62]}
+{"question": "What is the HIV/AIDS workplace policy?", "expected_sections": ["EMPLOYEE WELFARE", "HIV/AIDS", "Workplace", "Policy", "5.9"], "expected_pages": [104, 105, 106]}
+{"question": "What is the work-related stress management policy?", "expected_sections": ["EMPLOYEE WELFARE", "Stress", "Management", "Policy", "5.11"], "expected_pages": [110, 111, 112]}
+{"question": "What safety measures are in place?", "expected_sections": ["EMPLOYEE WELFARE", "Safety", "Health"], "expected_pages": [85, 86, 87]}
+{"question": "What are the occupational health and safety reporting procedures?", "expected_sections": ["EMPLOYEE WELFARE", "Occupational", "Health", "Safety", "Reporting", "Procedures"], "expected_pages": [85, 86, 87]}
+{"question": "What is the sabbatical leave policy?", "expected_sections": ["ATTENDANCE AND LEAVE", "Sabbatical", "4.10"], "expected_pages": [83, 84]}
+{"question": "How do performance improvement plans work?", "expected_sections": ["PERFORMANCE MANAGEMENT", "Improvement", "Plan"], "expected_pages": [144, 145, 146]}
