@@ -30,7 +30,7 @@ function AppContent() {
       case 'skillsmith':
         return <SkillSmith />;
       case 'team-memory':
-        return <TeamMemoryAgent />;
+        return <TeamMemoryAgent onTabChange={setActiveTab} />;
       default:
         return <KnowledgeQA />;
     }
