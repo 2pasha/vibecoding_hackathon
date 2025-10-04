@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useReducer, ReactNode } from 'react';
 import { AuthState, AppState, Message, TabType, UserAuthState } from '@/types';
 import { apiClient } from '@/services/api';
 
@@ -18,14 +18,15 @@ type AppAction =
 
 // Initial state
 const initialAuthState: AuthState = {
-  token: apiClient.getToken() || '',
-  isValid: false,
+  token: '', // No token needed - backend handles authentication internally
+  isValid: true, // Assume API is always available since backend handles auth
   message: '',
 };
 
 const initialUserAuthState: UserAuthState = {
   isAuthenticated: false,
   user: null,
+  idToken: null,
 };
 
 const initialState: AppState = {
@@ -75,11 +76,10 @@ function appReducer(state: AppState, action: AppAction): AppState {
 interface AppContextType {
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
-  validateToken: (token: string) => Promise<void>;
   sendMessage: (content: string) => Promise<void>;
   clearMessages: () => void;
   setActiveTab: (tab: TabType) => void;
-  login: (idToken: string) => void;
+  login: (idToken: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -89,40 +89,8 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
-  const validateToken = async (token: string) => {
-    dispatch({ type: 'SET_TOKEN', payload: token });
-    
-    try {
-      const result = await apiClient.validateToken(token);
-      dispatch({ 
-        type: 'SET_VALIDATION', 
-        payload: { isValid: result.valid, message: result.message } 
-      });
-      
-      if (result.valid) {
-        apiClient.setToken(token);
-      } else {
-        apiClient.clearToken();
-      }
-    } catch (error) {
-      dispatch({ 
-        type: 'SET_VALIDATION', 
-        payload: { isValid: false, message: `Error: ${error}` } 
-      });
-      apiClient.clearToken();
-    }
-  };
-
-  // Auto-validate token on startup if it exists in localStorage
-  useEffect(() => {
-    const savedToken = apiClient.getToken();
-    if (savedToken && savedToken !== state.auth.token) {
-      validateToken(savedToken);
-    }
-  }, []); // Empty dependency array - only run on mount
-
   const sendMessage = async (content: string) => {
-    if (!content.trim() || state.isProcessing || !state.auth.isValid) {
+    if (!content.trim() || state.isProcessing) {
       return;
     }
 
@@ -170,28 +138,58 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_ACTIVE_TAB', payload: tab });
   };
 
-  const login = (idToken: string) => {
-    // Mock authentication - check for demo ID token
-    if (idToken === 'demo-token-ann-123') {
-      dispatch({
-        type: 'SET_USER_AUTH',
-        payload: {
-          isAuthenticated: true,
-          user: {
-            name: 'Ann',
-            email: 'ann@cheatix.com'
-          }
-        }
+  const login = async (idToken: string) => {
+    try {
+      // Validate token and get user data
+      const response = await fetch('/api/validate-user-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: idToken })
       });
-    } else {
-      // For any other tokens, show as not authenticated
+      
+      if (response.ok) {
+        const data = await response.json();
+        const userData = data.user;
+        
+        dispatch({
+          type: 'SET_USER_AUTH',
+          payload: {
+            isAuthenticated: true,
+            user: {
+              name: userData.name,
+              email: `${userData.name.toLowerCase().replace(/\s+/g, '.')}@cheatix.com`
+            },
+            idToken: idToken
+          }
+        });
+        // Set the ID token in the API client
+        apiClient.setIdToken(idToken);
+      } else {
+        // Token is invalid
+        dispatch({
+          type: 'SET_USER_AUTH',
+          payload: {
+            isAuthenticated: false,
+            user: null,
+            idToken: null
+          }
+        });
+        apiClient.clearIdToken();
+      }
+    } catch (error) {
+      console.error('Error validating token:', error);
+      // Fallback to not authenticated
       dispatch({
         type: 'SET_USER_AUTH',
         payload: {
           isAuthenticated: false,
-          user: null
+          user: null,
+          idToken: null
         }
       });
+      apiClient.clearIdToken();
     }
   };
 
@@ -200,15 +198,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       type: 'SET_USER_AUTH',
       payload: {
         isAuthenticated: false,
-        user: null
+        user: null,
+        idToken: null
       }
     });
+    // Clear the ID token from the API client
+    apiClient.clearIdToken();
   };
 
   const value: AppContextType = {
     state,
     dispatch,
-    validateToken,
     sendMessage,
     clearMessages,
     setActiveTab,

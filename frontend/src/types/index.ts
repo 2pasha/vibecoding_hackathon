@@ -49,6 +49,7 @@ export interface UserAuthState {
     name: string;
     email: string;
   } | null;
+  idToken: string | null;
 }
 
 export type TabType = 'knowledge-qa' | 'skillsmith' | 'team-memory';
@@ -68,7 +69,6 @@ export interface ChatMessageProps {
 
 export interface SettingsPanelProps {
   auth: AuthState;
-  onAuthChange: (auth: AuthState) => void;
 }
 
 export interface ChatInputProps {

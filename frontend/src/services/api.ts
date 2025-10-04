@@ -10,6 +10,7 @@ import {
 class ApiClient {
   private client: AxiosInstance;
   private baseURL: string;
+  private idToken: string | null = null;
 
   constructor(baseURL: string = '/api') {
     this.baseURL = baseURL;
@@ -21,12 +22,11 @@ class ApiClient {
       },
     });
 
-    // Request interceptor to add auth token
+    // Request interceptor to add ID token
     this.client.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem('api_token');
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+        if (this.idToken) {
+          config.headers.Authorization = `Bearer ${this.idToken}`;
         }
         return config;
       },
@@ -102,22 +102,17 @@ class ApiClient {
     }
   }
 
-  setToken(token: string): void {
-    localStorage.setItem('api_token', token);
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem('api_token');
-  }
-
-  clearToken(): void {
-    localStorage.removeItem('api_token');
-    localStorage.removeItem('token_valid');
-  }
-
   setBaseURL(url: string): void {
     this.baseURL = url;
     this.client.defaults.baseURL = url;
+  }
+
+  setIdToken(token: string | null): void {
+    this.idToken = token;
+  }
+
+  clearIdToken(): void {
+    this.idToken = null;
   }
 }
 

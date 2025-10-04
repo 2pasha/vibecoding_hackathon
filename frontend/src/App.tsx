@@ -112,7 +112,7 @@ function AppContent() {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
-        onLogin={(idToken) => login(idToken)}
+        onLogin={async (idToken) => await login(idToken)}
       />
     </div>
   );

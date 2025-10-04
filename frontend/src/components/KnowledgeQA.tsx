@@ -6,21 +6,17 @@ import { Trash2 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 
 export function KnowledgeQA() {
-  const { state, validateToken, sendMessage, clearMessages } = useApp();
-
-  // Manual health check only when needed
-
-  const handleAuthChange = async (auth: typeof state.auth) => {
-    await validateToken(auth.token);
-  };
+  const { state, sendMessage, clearMessages } = useApp();
 
   const handleQuestionSelect = (question: string) => {
     sendMessage(question);
   };
 
-  const placeholder = state.auth.isValid 
+  const placeholder = state.userAuth.isAuthenticated
     ? "e.g., What is the vacation policy?"
-    : "Please validate your API token first";
+    : "Please authenticate to use the chat";
+
+  const isDisabled = state.isProcessing || !state.userAuth.isAuthenticated;
 
   return (
     <div className="min-h-screen bg-background">
@@ -31,14 +27,13 @@ export function KnowledgeQA() {
             <div className="bg-card border border-border rounded-lg p-4">
               <SettingsPanel
                 auth={state.auth}
-                onAuthChange={handleAuthChange}
               />
             </div>
 
             <div className="bg-card border border-border rounded-lg p-4">
               <ExampleQuestions
                 onQuestionSelect={handleQuestionSelect}
-                disabled={state.isProcessing || !state.auth.isValid}
+                disabled={isDisabled}
               />
             </div>
           </aside>
@@ -64,7 +59,7 @@ export function KnowledgeQA() {
             {/* Chat Input */}
             <ChatInput
               onSendMessage={sendMessage}
-              disabled={state.isProcessing || !state.auth.isValid}
+              disabled={isDisabled}
               placeholder={placeholder}
             />
           </main>

@@ -157,9 +157,9 @@ async def validate_token_endpoint(request: TokenValidationRequest):
     )
 
 
-@app.post("/validate-user-token", response_model=UserTokenValidationResponse)
+@app.post("/validate-user-token")
 async def validate_user_token(request: UserTokenValidationRequest):
-    """Validate user API token and return user data if valid."""
+    """Validate user ID token and return user data if valid."""
     try:
         # Read team data from JSON file
         team_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "team.json")
@@ -167,7 +167,7 @@ async def validate_user_token(request: UserTokenValidationRequest):
         with open(team_file_path, 'r', encoding='utf-8') as f:
             team_data = json.load(f)
         
-        # Find user by API token
+        # Find user by ID token (api_token field)
         user = None
         for member in team_data:
             if member["api_token"] == request.token:
@@ -175,16 +175,16 @@ async def validate_user_token(request: UserTokenValidationRequest):
                 break
         
         if not user:
-            raise HTTPException(status_code=401, detail="Invalid token")
+            raise HTTPException(status_code=401, detail="Invalid ID token")
         
         # Return user data (excluding api_token for security)
         user_data = {k: v for k, v in user.items() if k != "api_token"}
         
-        return UserTokenValidationResponse(
-            success=True,
-            message="Token validated successfully",
-            user_data=user_data
-        )
+        return {
+            "success": True,
+            "message": "Token validated successfully",
+            "user": user_data
+        }
         
     except FileNotFoundError:
         raise HTTPException(status_code=500, detail="Team data file not found")
@@ -197,9 +197,9 @@ async def validate_user_token(request: UserTokenValidationRequest):
         raise HTTPException(status_code=500, detail=f"Error validating user token: {str(e)}")
 
 
-@app.get("/team", response_model=TeamResponse)
+@app.get("/team")
 async def get_team_members():
-    """Get list of team members without API tokens."""
+    """Get list of team members with API tokens for authentication."""
     try:
         # Read team data from JSON file
         team_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "team.json")
@@ -207,19 +207,8 @@ async def get_team_members():
         with open(team_file_path, 'r', encoding='utf-8') as f:
             team_data = json.load(f)
         
-        # Convert to TeamMember objects (only include required fields)
-        members = []
-        for member_data in team_data:
-            # Only include the specific fields requested
-            member_filtered = {
-                "name": member_data["name"],
-                "birth_date": member_data["birth_date"],
-                "position": member_data["position"],
-                "photo_url": member_data["photo_url"]
-            }
-            members.append(TeamMember(**member_filtered))
-        
-        return TeamResponse(members=members)
+        # Return full team data including api_token for frontend authentication
+        return team_data
         
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Team data file not found")
@@ -239,7 +228,7 @@ async def root():
             "POST /ask": "Query the HR manual (requires Bearer token)",
             "POST /ingest": "Rebuild indexes from PDF (requires Bearer token)",
             "POST /validate-token": "Validate API token",
-            "POST /validate-user-token": "Validate user token by name",
+            "POST /validate-user-token": "Validate user ID token and return user data",
             "GET /team": "Get list of team members",
             "GET /healthz": "Health check"
         }
