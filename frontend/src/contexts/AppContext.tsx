@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, ReactNode } from 'react';
+import { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
 import { AuthState, AppState, Message } from '@/types';
 import { apiClient } from '@/services/api';
 
@@ -16,7 +16,7 @@ type AppAction =
 
 // Initial state
 const initialAuthState: AuthState = {
-  token: '',
+  token: apiClient.getToken() || '',
   isValid: false,
   message: '',
 };
@@ -96,6 +96,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       apiClient.clearToken();
     }
   };
+
+  // Auto-validate token on startup if it exists in localStorage
+  useEffect(() => {
+    const savedToken = apiClient.getToken();
+    if (savedToken && savedToken !== state.auth.token) {
+      validateToken(savedToken);
+    }
+  }, []); // Empty dependency array - only run on mount
 
   const sendMessage = async (content: string) => {
     if (!content.trim() || state.isProcessing || !state.auth.isValid) {

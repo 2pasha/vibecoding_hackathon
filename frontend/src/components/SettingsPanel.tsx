@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SettingsPanelProps } from '@/types';
 import { 
   Shield, 
@@ -14,6 +14,11 @@ export function SettingsPanel({
 }: SettingsPanelProps) {
   const [tokenInput, setTokenInput] = useState(auth.token);
   const [isValidating, setIsValidating] = useState(false);
+
+  // Sync tokenInput with auth.token when it changes (e.g., loaded from localStorage)
+  useEffect(() => {
+    setTokenInput(auth.token);
+  }, [auth.token]);
 
   const handleValidateToken = async () => {
     if (!tokenInput.trim()) return;
