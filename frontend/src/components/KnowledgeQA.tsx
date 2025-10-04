@@ -12,11 +12,11 @@ export function KnowledgeQA() {
     sendMessage(question);
   };
 
-  const placeholder = state.auth.isValid && state.userAuth.isAuthenticated
+  const placeholder = state.userAuth.isAuthenticated
     ? "e.g., What is the vacation policy?"
     : "Please authenticate to use the chat";
 
-  const isDisabled = state.isProcessing || !state.auth.isValid || !state.userAuth.isAuthenticated;
+  const isDisabled = state.isProcessing || !state.userAuth.isAuthenticated;
 
   return (
     <div className="min-h-screen bg-background">

@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useReducer, ReactNode } from 'react';
 import { AuthState, AppState, Message, TabType, UserAuthState } from '@/types';
 import { apiClient } from '@/services/api';
 
@@ -18,8 +18,8 @@ type AppAction =
 
 // Initial state
 const initialAuthState: AuthState = {
-  token: import.meta.env.VITE_API_TOKEN || '',
-  isValid: false,
+  token: '', // No token needed - backend handles authentication internally
+  isValid: true, // Assume API is always available since backend handles auth
   message: '',
 };
 
@@ -75,7 +75,6 @@ function appReducer(state: AppState, action: AppAction): AppState {
 interface AppContextType {
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
-  validateToken: (token: string) => Promise<void>;
   sendMessage: (content: string) => Promise<void>;
   clearMessages: () => void;
   setActiveTab: (tab: TabType) => void;
@@ -89,40 +88,8 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
-  const validateToken = async (token: string) => {
-    dispatch({ type: 'SET_TOKEN', payload: token });
-    
-    try {
-      const result = await apiClient.validateToken(token);
-      dispatch({ 
-        type: 'SET_VALIDATION', 
-        payload: { isValid: result.valid, message: result.message } 
-      });
-      
-      if (result.valid) {
-        apiClient.setToken(token);
-      } else {
-        apiClient.clearToken();
-      }
-    } catch (error) {
-      dispatch({ 
-        type: 'SET_VALIDATION', 
-        payload: { isValid: false, message: `Error: ${error}` } 
-      });
-      apiClient.clearToken();
-    }
-  };
-
-  // Auto-validate token on startup if it exists in environment variables
-  useEffect(() => {
-    const envToken = import.meta.env.VITE_API_TOKEN;
-    if (envToken && envToken !== state.auth.token) {
-      validateToken(envToken);
-    }
-  }, []); // Empty dependency array - only run on mount
-
   const sendMessage = async (content: string) => {
-    if (!content.trim() || state.isProcessing || !state.auth.isValid) {
+    if (!content.trim() || state.isProcessing) {
       return;
     }
 
@@ -208,7 +175,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value: AppContextType = {
     state,
     dispatch,
-    validateToken,
     sendMessage,
     clearMessages,
     setActiveTab,

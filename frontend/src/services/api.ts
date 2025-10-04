@@ -21,13 +21,9 @@ class ApiClient {
       },
     });
 
-    // Request interceptor to add auth token
+    // Request interceptor (no auth needed - backend handles it internally)
     this.client.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem('api_token');
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
         return config;
       },
       (error) => {
@@ -100,19 +96,6 @@ class ApiClient {
     } catch (error) {
       return false;
     }
-  }
-
-  setToken(token: string): void {
-    localStorage.setItem('api_token', token);
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem('api_token');
-  }
-
-  clearToken(): void {
-    localStorage.removeItem('api_token');
-    localStorage.removeItem('token_valid');
   }
 
   setBaseURL(url: string): void {
