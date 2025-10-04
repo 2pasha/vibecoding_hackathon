@@ -5,11 +5,14 @@ import { useApp } from '@/contexts/AppContext';
 
 type PDPState = 'not-logged-in' | 'ready' | 'generating' | 'result';
 
+type LoadingState = 'initial' | 'extended' | 'very-extended' | 'checking';
+
 export function SkillSmith() {
   const { state } = useApp();
   const [pdpState, setPdpState] = useState<PDPState>('not-logged-in');
   const [userInput, setUserInput] = useState('');
   const [pdpResult, setPdpResult] = useState<any>(null);
+  const [loadingState, setLoadingState] = useState<LoadingState>('initial');
 
   // Check authentication state
   useEffect(() => {
@@ -22,6 +25,20 @@ export function SkillSmith() {
 
   const handleGeneratePDP = async () => {
     setPdpState('generating');
+    setLoadingState('initial');
+    
+    // Set up timers for progressive loading states
+    const extendedTimer = setTimeout(() => {
+      setLoadingState('extended');
+    }, 5000);
+    
+    const veryExtendedTimer = setTimeout(() => {
+      setLoadingState('very-extended');
+    }, 10000);
+    
+    const checkingTimer = setTimeout(() => {
+      setLoadingState('checking');
+    }, 15000);
     
     try {
       // Send request to generate course
@@ -78,6 +95,11 @@ export function SkillSmith() {
         timeline: '6-12 months for initial goals',
         userInput: userInput || "I want to increase my skills and improve my professional development. Please create a comprehensive Personal Development Plan (PDP) for me."
       });
+    } finally {
+      // Clear all timers
+      clearTimeout(extendedTimer);
+      clearTimeout(veryExtendedTimer);
+      clearTimeout(checkingTimer);
     }
     
     setPdpState('result');
@@ -176,17 +198,72 @@ export function SkillSmith() {
               <Loader2 className="h-12 w-12 text-purple-500 animate-spin" />
             </div>
             
-            <div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">Generating your PDP...</h3>
-              <p className="text-gray-600">
-                Our AI is analyzing your input and creating a personalized development plan just for you.
-              </p>
-            </div>
+            {loadingState === 'initial' && (
+              <>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-700 mb-2">Generating your PDP...</h3>
+                  <p className="text-gray-600">
+                    Our AI is analyzing your input and creating a personalized development plan just for you.
+                  </p>
+                </div>
 
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-              <Clock className="h-4 w-4" />
-              <span>This usually takes about 5 seconds</span>
-            </div>
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                  <Clock className="h-4 w-4" />
+                  <span>This usually takes about 5 seconds</span>
+                </div>
+              </>
+            )}
+            
+            {loadingState === 'extended' && (
+              <>
+                <div className="flex justify-center mb-4">
+                  <div className="text-6xl">🐱</div>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-700 mb-2">Working...</h3>
+
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                    <Clock className="h-4 w-4" />
+                    <h3>Or a little bit longer... 😅</h3>
+                  </div>
+                </div>
+              </>
+            )}
+            
+            {loadingState === 'very-extended' && (
+              <>
+                <div className="flex justify-center mb-4">
+                  <div className="text-6xl">⏰</div>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-700 mb-2">Still working...</h3>
+                  
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                    <Clock className="h-4 w-4" />
+                    <span>Or maybe even little bit longer that you expect</span>
+                  </div>
+                </div>
+              </>
+            )}
+            
+            {loadingState === 'checking' && (
+              <>
+                <div className="flex justify-center mb-4">
+                  <div className="text-6xl">🔍</div>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-700 mb-2">Okay, I will go and check is everything is OK</h3>
+                
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                    <Clock className="h-4 w-4" />
+                    <span>Almost there...</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
