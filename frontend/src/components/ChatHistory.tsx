@@ -18,7 +18,7 @@ export function ChatHistory({ messages }: ChatHistoryProps) {
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">Start a conversation</h3>
             <p className="text-muted-foreground max-w-sm">
-              Ask questions about ETI HR policies and procedures. Try one of the example questions or ask your own.
+              Ask questions about Cheatix company or whatever you want. Try one of the example questions or ask your own.
             </p>
           </div>
         </div>

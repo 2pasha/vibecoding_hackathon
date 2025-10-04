@@ -4,8 +4,7 @@ import {
   QueryResponse, 
   TokenValidationRequest, 
   TokenValidationResponse, 
-  HealthResponse,
-  ApiError 
+  HealthResponse
 } from '@/types';
 
 class ApiClient {
@@ -50,9 +49,9 @@ class ApiClient {
     );
   }
 
-  async askQuestion(query: string, maxTokens: number = 600): Promise<QueryResponse> {
+  async askQuestion(query: string): Promise<QueryResponse> {
     try {
-      const request: QueryRequest = { query, max_tokens: maxTokens };
+      const request: QueryRequest = { query, max_tokens: 600 };
       const response: AxiosResponse<QueryResponse> = await this.client.post('/ask', request);
       return response.data;
     } catch (error) {

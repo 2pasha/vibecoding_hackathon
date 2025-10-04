@@ -56,8 +56,6 @@ export type TabType = 'knowledge-qa' | 'skillsmith' | 'team-memory';
 export interface AppState {
   messages: Message[];
   isProcessing: boolean;
-  apiHealthy: boolean;
-  maxTokens: number;
   auth: AuthState;
   userAuth: UserAuthState;
   activeTab: TabType;
@@ -71,10 +69,6 @@ export interface ChatMessageProps {
 export interface SettingsPanelProps {
   auth: AuthState;
   onAuthChange: (auth: AuthState) => void;
-  maxTokens: number;
-  onMaxTokensChange: (tokens: number) => void;
-  apiHealthy: boolean;
-  onApiHealthCheck: () => Promise<boolean>;
 }
 
 export interface ChatInputProps {

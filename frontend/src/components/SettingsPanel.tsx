@@ -1,26 +1,24 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SettingsPanelProps } from '@/types';
 import { 
   Shield, 
   CheckCircle, 
   XCircle, 
   AlertCircle, 
-  RefreshCw, 
-  Settings,
-  Sliders
+  RefreshCw
 } from 'lucide-react';
 
 export function SettingsPanel({ 
   auth, 
-  onAuthChange, 
-  maxTokens, 
-  onMaxTokensChange, 
-  apiHealthy, 
-  onApiHealthCheck 
+  onAuthChange
 }: SettingsPanelProps) {
   const [tokenInput, setTokenInput] = useState(auth.token);
   const [isValidating, setIsValidating] = useState(false);
-  const [isCheckingHealth, setIsCheckingHealth] = useState(false);
+
+  // Sync tokenInput with auth.token when it changes (e.g., loaded from localStorage)
+  useEffect(() => {
+    setTokenInput(auth.token);
+  }, [auth.token]);
 
   const handleValidateToken = async () => {
     if (!tokenInput.trim()) return;
@@ -30,15 +28,6 @@ export function SettingsPanel({
       await onAuthChange({ ...auth, token: tokenInput.trim() });
     } finally {
       setIsValidating(false);
-    }
-  };
-
-  const handleHealthCheck = async () => {
-    setIsCheckingHealth(true);
-    try {
-      await onApiHealthCheck();
-    } finally {
-      setIsCheckingHealth(false);
     }
   };
 
@@ -95,87 +84,6 @@ export function SettingsPanel({
         </div>
       </div>
 
-      {/* Settings Section */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Settings className="h-4 w-4 text-muted-foreground" />
-          <h3 className="font-semibold text-sm">Settings</h3>
-        </div>
-        
-        {/* API Health Check */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm">API Status</span>
-            <button
-              onClick={handleHealthCheck}
-              disabled={isCheckingHealth}
-              className="p-1 hover:bg-accent rounded"
-            >
-              <RefreshCw className={`h-4 w-4 ${isCheckingHealth ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
-          
-          <div className="text-sm">
-            {apiHealthy ? (
-              <div className="flex items-center gap-2 text-green-600">
-                <CheckCircle className="h-4 w-4" />
-                API is running
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 text-red-600">
-                <XCircle className="h-4 w-4" />
-                API not available
-              </div>
-            )}
-          </div>
-        </div>
-        
-        {/* Max Tokens Slider */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Sliders className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">Max tokens in response</span>
-          </div>
-          
-          <div className="space-y-2">
-            <input
-              type="range"
-              min="100"
-              max="1000"
-              step="50"
-              value={maxTokens}
-              onChange={(e) => onMaxTokensChange(Number(e.target.value))}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>100</span>
-              <span className="font-semibold">{maxTokens}</span>
-              <span>1000</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* About Section */}
-      <div className="space-y-3">
-        <h3 className="font-semibold text-sm">About</h3>
-        <div className="text-sm text-muted-foreground space-y-2">
-          <p>This chat interface allows you to ask questions about ETI HR policies and procedures.</p>
-          
-          <div>
-            <p className="font-semibold mb-1">Features:</p>
-            <ul className="list-disc list-inside space-y-1 ml-2">
-              <li>Hybrid search (BM25 + FAISS)</li>
-              <li>Accurate citations</li>
-              <li>Real-time responses</li>
-            </ul>
-          </div>
-          
-          <p className="text-xs">
-            <strong>Note:</strong> Answers are based strictly on the HR manual content.
-          </p>
-        </div>
-      </div>
     </div>
   );
 }

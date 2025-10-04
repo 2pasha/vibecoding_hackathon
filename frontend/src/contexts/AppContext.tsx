@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, ReactNode } from 'react';
+import { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
 import { AuthState, AppState, Message, TabType, UserAuthState } from '@/types';
 import { apiClient } from '@/services/api';
 
@@ -11,8 +11,6 @@ type AuthAction =
 type AppAction = 
   | { type: 'ADD_MESSAGE'; payload: Message }
   | { type: 'SET_PROCESSING'; payload: boolean }
-  | { type: 'SET_API_HEALTH'; payload: boolean }
-  | { type: 'SET_MAX_TOKENS'; payload: number }
   | { type: 'SET_ACTIVE_TAB'; payload: TabType }
   | { type: 'SET_USER_AUTH'; payload: UserAuthState }
   | { type: 'CLEAR_MESSAGES' }
@@ -20,7 +18,7 @@ type AppAction =
 
 // Initial state
 const initialAuthState: AuthState = {
-  token: '',
+  token: apiClient.getToken() || '',
   isValid: false,
   message: '',
 };
@@ -33,8 +31,6 @@ const initialUserAuthState: UserAuthState = {
 const initialState: AppState = {
   messages: [],
   isProcessing: false,
-  apiHealthy: true, // Assume healthy for development
-  maxTokens: 600,
   auth: initialAuthState,
   userAuth: initialUserAuthState,
   activeTab: 'knowledge-qa',
@@ -60,10 +56,6 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, messages: [...state.messages, action.payload] };
     case 'SET_PROCESSING':
       return { ...state, isProcessing: action.payload };
-    case 'SET_API_HEALTH':
-      return { ...state, apiHealthy: action.payload };
-    case 'SET_MAX_TOKENS':
-      return { ...state, maxTokens: action.payload };
     case 'SET_ACTIVE_TAB':
       return { ...state, activeTab: action.payload };
     case 'SET_USER_AUTH':
@@ -84,12 +76,10 @@ interface AppContextType {
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
   validateToken: (token: string) => Promise<void>;
-  checkApiHealth: () => Promise<void>;
   sendMessage: (content: string) => Promise<void>;
   clearMessages: () => void;
-  setMaxTokens: (tokens: number) => void;
   setActiveTab: (tab: TabType) => void;
-  login: (email: string, password: string) => void;
+  login: (idToken: string) => void;
   logout: () => void;
 }
 
@@ -123,14 +113,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const checkApiHealth = async () => {
-    try {
-      const isHealthy = await apiClient.checkHealth();
-      dispatch({ type: 'SET_API_HEALTH', payload: isHealthy });
-    } catch (error) {
-      dispatch({ type: 'SET_API_HEALTH', payload: false });
+  // Auto-validate token on startup if it exists in localStorage
+  useEffect(() => {
+    const savedToken = apiClient.getToken();
+    if (savedToken && savedToken !== state.auth.token) {
+      validateToken(savedToken);
     }
-  };
+  }, []); // Empty dependency array - only run on mount
 
   const sendMessage = async (content: string) => {
     if (!content.trim() || state.isProcessing || !state.auth.isValid) {
@@ -148,7 +137,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_PROCESSING', payload: true });
 
     try {
-      const response = await apiClient.askQuestion(content.trim(), state.maxTokens);
+      const response = await apiClient.askQuestion(content.trim());
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -177,15 +166,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'CLEAR_MESSAGES' });
   };
 
-  const setMaxTokens = (tokens: number) => {
-    dispatch({ type: 'SET_MAX_TOKENS', payload: tokens });
-  };
-
   const setActiveTab = (tab: TabType) => {
     dispatch({ type: 'SET_ACTIVE_TAB', payload: tab });
   };
 
-  const login = (idToken: string, password: string) => {
+  const login = (idToken: string) => {
     // Mock authentication - check for demo ID token
     if (idToken === 'demo-token-ann-123') {
       dispatch({
@@ -224,10 +209,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     state,
     dispatch,
     validateToken,
-    checkApiHealth,
     sendMessage,
     clearMessages,
-    setMaxTokens,
     setActiveTab,
     login,
     logout,

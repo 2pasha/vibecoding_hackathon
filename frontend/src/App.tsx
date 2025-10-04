@@ -100,7 +100,7 @@ function AppContent() {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
-        onLogin={(idToken) => login(idToken, '')}
+        onLogin={(idToken) => login(idToken)}
       />
     </div>
   );
