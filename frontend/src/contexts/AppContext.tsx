@@ -200,7 +200,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
           isAuthenticated: true,
           user: {
             name: userData.name,
-            email: `${userData.name.toLowerCase().replace(/\s+/g, '.')}@cheatix.com`
+            email: `${userData.name.toLowerCase().replace(/\s+/g, '.')}@cheatix.com`,
+            photo_url: userData.photo_url,
+            position: userData.position,
+            birth_date: userData.birth_date,
+            hard_skills: userData.hard_skills,
+            soft_skills: userData.soft_skills,
+            notion_url: userData.notion_url
           },
           idToken: idToken
         };

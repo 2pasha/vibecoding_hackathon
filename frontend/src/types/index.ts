@@ -48,6 +48,12 @@ export interface UserAuthState {
   user: {
     name: string;
     email: string;
+    photo_url?: string;
+    position?: string;
+    birth_date?: string;
+    hard_skills?: string[];
+    soft_skills?: string[];
+    notion_url?: string;
   } | null;
   idToken: string | null;
 }
