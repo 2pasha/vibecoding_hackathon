@@ -7,8 +7,8 @@ class ResponseGenerator:
     def __init__(self):
         self.client = OpenAI(
             api_key=Config.OPENAI_API_KEY, 
-            timeout=10.0,  # Reduced timeout
-            max_retries=1  # Fewer retries for speed
+            timeout=60.0,  # Increased timeout for course generation
+            max_retries=2  # More retries for reliability
         )
         self.system_prompt = self._build_system_prompt()
     
@@ -98,3 +98,126 @@ IMPORTANT INSTRUCTIONS:
                     used_citations.append(citation)
             
             return used_citations if used_citations else list(set(citations))
+    
+    async def generate_course(self, user_context: str, learning_goal: str) -> str:
+        """Generate a personalized learning course based on user context and learning goal."""
+        course_prompt = f"""You are an expert learning and development specialist. Based on the user's current skills, position, and learning goals, create a comprehensive personalized learning roadmap.
+
+{user_context}
+
+Please create a detailed learning roadmap in clean HTML format following this exact template structure. Do NOT include DOCTYPE, html, head, meta, style tags or any document structure. Only include the content HTML elements:
+
+<h1>Specialist Growth Roadmap Template</h1>
+
+<h2>1. Current Assessment</h2>
+<table border="1" cellpadding="8" cellspacing="0">
+<tr><td><strong>Current Role/Skills</strong></td><td>[List current position and key skills]</td></tr>
+<tr><td><strong>Strengths</strong></td><td>[List 3 key strengths]</td></tr>
+<tr><td><strong>Development Areas</strong></td><td>[List 3 areas for improvement]</td></tr>
+</table>
+
+<h2>2. Growth Targets</h2>
+<table border="1" cellpadding="8" cellspacing="0">
+<tr><td><strong>Short-term (6-12 months)</strong></td><td>[Specific objectives]</td></tr>
+<tr><td><strong>Medium-term (1-2 years)</strong></td><td>[Career milestones]</td></tr>
+<tr><td><strong>Long-term (3+ years)</strong></td><td>[Aspirational position]</td></tr>
+</table>
+
+<h2>3. Skills Development Plan</h2>
+<table border="1" cellpadding="8" cellspacing="0">
+<tr><th>Skill/Knowledge Area</th><th>Current Level (1-5)</th><th>Target Level</th><th>Timeline</th><th>Resources</th></tr>
+<tr><td>[Technical Skill 1]</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>[Technical Skill 2]</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>[Soft Skill 1]</td><td></td><td></td><td></td><td></td></tr>
+</table>
+
+<h2>4. Action Plan Timeline</h2>
+<table border="1" cellpadding="8" cellspacing="0">
+<tr><th>Timeframe</th><th>Actions</th><th>Expected Outcomes</th></tr>
+<tr><td>Months 1-3</td><td>[Key activities]</td><td>[Results]</td></tr>
+<tr><td>Months 4-6</td><td>[Key activities]</td><td>[Results]</td></tr>
+<tr><td>Months 7-12</td><td>[Key activities]</td><td>[Results]</td></tr>
+</table>
+
+<h2>5. Resources Required</h2>
+<ul>
+<li><strong>Training/Courses:</strong> [Specific courses with dates]</li>
+<li><strong>Mentorship:</strong> [Potential mentors]</li>
+<li><strong>Projects:</strong> [Stretch assignments]</li>
+<li><strong>Budget:</strong> [Financial resources needed]</li>
+</ul>
+
+<h2>6. Risk Assessment</h2>
+<table border="1" cellpadding="8" cellspacing="0">
+<tr><th>Risk</th><th>Impact (L/M/H)</th><th>Mitigation</th></tr>
+<tr><td>[Risk 1]</td><td></td><td></td></tr>
+<tr><td>[Risk 2]</td><td></td><td></td></tr>
+</table>
+
+<h2>7. Success Metrics</h2>
+<ul>
+<li><strong>Key Performance Indicators:</strong> [Measurable indicators]</li>
+<li><strong>Review Schedule:</strong> [Frequency of progress reviews]</li>
+<li><strong>Feedback Sources:</strong> [Who will provide assessment]</li>
+</ul>
+
+IMPORTANT: Generate ONLY the HTML content elements (h1, h2, table, ul, li, strong, th, td, tr) without any document structure, DOCTYPE, html, head, meta, style tags, or newline characters. The output should be clean HTML content that can be directly pasted into Notion.
+
+Make sure to:
+1. Fill in all sections with specific, actionable content
+2. Base recommendations on the user's current skill level and position
+3. Align with their stated learning goal: "{learning_goal}"
+4. Provide realistic timelines and achievable milestones
+5. Include specific resources, courses, and learning materials
+6. Consider both technical and soft skill development
+7. Make it personalized and relevant to their career path
+8. Use clean HTML formatting with tables, headers, and lists
+9. NO newline characters, NO document structure, NO styling
+
+Generate the complete roadmap in clean HTML content now:"""
+
+        messages = [
+            {"role": "system", "content": "You are an expert learning and development specialist with deep knowledge of career development, skill assessment, and personalized learning paths."},
+            {"role": "user", "content": course_prompt}
+        ]
+        
+        response = self.client.chat.completions.create(
+            model=Config.CHAT_MODEL,
+            messages=messages,
+            temperature=0.7,  # Higher temperature for more creative and personalized content
+            max_tokens=4000,  # Increased tokens for comprehensive course content
+            stream=False,
+            timeout=90.0  # Additional timeout for course generation specifically
+        )
+        
+        # Clean up the response content to ensure clean HTML formatting
+        content = response.choices[0].message.content.strip()
+        
+        # Remove any escaped characters and convert to clean HTML
+        content = content.replace('\\n', '')      # Remove escaped newlines
+        content = content.replace('\\r', '')      # Remove escaped carriage returns
+        content = content.replace('\\t', '')      # Remove escaped tabs
+        
+        # Handle double-escaped characters
+        content = content.replace('\\\\n', '')    # Remove double-escaped newlines
+        content = content.replace('\\\\r', '')    # Remove double-escaped carriage returns
+        content = content.replace('\\\\t', '')    # Remove double-escaped tabs
+        
+        # Clean up any remaining escape sequences
+        import re
+        content = re.sub(r'\\([ntr])', '', content)  # Remove any remaining escape sequences
+        
+        # Remove all newlines to create clean HTML
+        content = content.replace('\n', '')
+        content = content.replace('\r', '')
+        
+        # Clean up extra spaces around HTML tags
+        content = re.sub(r'>\s+<', '><', content)  # Remove spaces between tags
+        
+        # Clean up multiple spaces
+        content = re.sub(r'\s+', ' ', content)  # Replace multiple spaces with single space
+        
+        # Ensure proper HTML formatting
+        content = content.strip()
+        
+        return content

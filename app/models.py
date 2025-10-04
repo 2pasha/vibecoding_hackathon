@@ -54,3 +54,13 @@ class UserTokenValidationResponse(BaseModel):
     success: bool
     message: str
     user_data: Optional[dict] = None
+
+
+class CourseGenerationRequest(BaseModel):
+    learning_goal: str
+
+
+class CourseGenerationResponse(BaseModel):
+    success: bool
+    message: str
+    course_content: Optional[str] = None
