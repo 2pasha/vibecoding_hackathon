@@ -1,10 +1,10 @@
-import { Brain, BookOpen, Wrench, ArrowRight, Clock } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 interface TeamMemoryAgentProps {
   onTabChange?: (tab: 'knowledge-qa' | 'skillsmith') => void;
 }
 
-export function TeamMemoryAgent({ onTabChange }: TeamMemoryAgentProps) {
+export function TeamMemoryAgent({ onTabChange: _onTabChange }: TeamMemoryAgentProps) {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">

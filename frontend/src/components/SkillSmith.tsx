@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Wrench, Target, TrendingUp, Users, BookOpen, Star, LogIn, ExternalLink, CheckCircle, Clock, Loader2 } from 'lucide-react';
+import { Wrench, Target, BookOpen, LogIn, ExternalLink, CheckCircle, Clock, Loader2 } from 'lucide-react';
 import { cn } from '@/utils';
 import { useApp } from '@/contexts/AppContext';
 

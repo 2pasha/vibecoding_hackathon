@@ -1,4 +1,3 @@
-import React from 'react';
 import { Message } from '@/types';
 import { formatTimestamp, formatLatency } from '@/utils';
 import { Bot, User, Clock, FileText, BarChart3 } from 'lucide-react';
