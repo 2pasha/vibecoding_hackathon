@@ -1,4 +1,4 @@
-import { CheckCircle, ExternalLink, Target, BookOpen, Clock, Loader2, Eye } from 'lucide-react';
+import { CheckCircle, Target, BookOpen, Clock, Loader2, Eye } from 'lucide-react';
 import { cn } from '@/utils';
 import { useApp } from '@/contexts/AppContext';
 import { ChecklistData } from '@/types/checklist';
@@ -13,7 +13,6 @@ interface PDPResultProps {
   onRegeneratePDP: () => void;
   onCheckboxChange: (checklistId: string, categoryIndex: number, itemIndex: number, completed: boolean) => void;
   onViewFullChecklist: (checklist: ChecklistData) => void;
-  onGoToNotion: () => void;
 }
 
 export function PDPResult({ 
@@ -25,8 +24,7 @@ export function PDPResult({
   onGenerateChecklist, 
   onRegeneratePDP, 
   onCheckboxChange, 
-  onViewFullChecklist, 
-  onGoToNotion 
+  onViewFullChecklist
 }: PDPResultProps) {
   const { state } = useApp();
 

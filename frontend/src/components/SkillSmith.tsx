@@ -140,11 +140,6 @@ export function SkillSmith() {
     setPdpState('result');
   };
 
-  const handleGoToNotion = () => {
-    // Open Notion page in new tab
-    window.open('https://notion.so', '_blank');
-  };
-
   const handleGenerateChecklist = async () => {
     setIsGeneratingChecklist(true);
     
@@ -376,7 +371,6 @@ export function SkillSmith() {
           onRegeneratePDP={handleGeneratePDP}
           onCheckboxChange={handleCheckboxChange}
           onViewFullChecklist={handleViewFullChecklist}
-          onGoToNotion={handleGoToNotion}
         />
       )}
       
