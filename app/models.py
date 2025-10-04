@@ -33,3 +33,14 @@ class TokenValidationRequest(BaseModel):
 class TokenValidationResponse(BaseModel):
     valid: bool
     message: str
+
+
+class TeamMember(BaseModel):
+    name: str
+    birth_date: str
+    position: str
+    photo_url: str
+
+
+class TeamResponse(BaseModel):
+    members: List[TeamMember]
