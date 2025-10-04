@@ -21,14 +21,14 @@ def create_app() -> FastAPI:
         version="1.0.0"
     )
     
-    # CORS off by default as per brief, but can be enabled for specific origins
-    # app.add_middleware(
-    #     CORSMiddleware,
-    #     allow_origins=["https://your-frontend-domain.com"],
-    #     allow_credentials=True,
-    #     allow_methods=["*"],
-    #     allow_headers=["*"],
-    # )
+    # Enable CORS for development
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     
     return app
 
