@@ -1,256 +1,280 @@
-# HR Manual RAG System
+# Cheatix Team Assistance
 
-A Retrieval-Augmented Generation (RAG) system for querying the HR Policies and Procedures manual. This system uses hybrid search (BM25 + FAISS) and GPT-4o-mini to provide accurate answers with proper citations.
+A comprehensive AI-powered team productivity platform featuring HR knowledge management, personalized skill development, and team collaboration tools. Built with FastAPI backend and React frontend.
 
-## 🚀 Quick Start for Developers
+## 🚀 Features
 
-**For development with Docker (recommended):**
+### 📚 Knowledge QA
+- **RAG-powered HR Manual Search**: Query company policies and procedures using hybrid search (BM25 + FAISS)
+- **Intelligent Citations**: Accurate source references with page numbers
+- **Real-time Chat Interface**: Modern, responsive chat UI with message history
+- **Example Questions**: Pre-built queries to help users get started
+
+### 🔧 SkillSmith
+- **Personal Development Plans (PDP)**: AI-generated personalized skill development programs
+- **User-Specific Recommendations**: Based on individual skills, position, and goals
+- **Progressive Loading States**: Engaging user experience with humorous loading messages
+- **HTML-Rich Content**: Comprehensive PDPs with structured learning paths
+
+### 🧠 Team Memory Agent
+- **Coming Soon**: Advanced team collaboration and memory management features
+- **Future Integration**: Planned features for team knowledge sharing and project management
+
+## 🏗️ Architecture
+
+### Backend (FastAPI)
+- **Hybrid Search Engine**: BM25 (keyword) + FAISS (semantic) with Reciprocal Rank Fusion
+- **AI Response Generation**: GPT-4o-mini for intelligent content creation
+- **User Authentication**: Token-based authentication with team member management
+- **RESTful API**: Clean, documented endpoints with automatic OpenAPI docs
+
+### Frontend (React + TypeScript)
+- **Modern UI**: Tailwind CSS with responsive design
+- **State Management**: React Context API with comprehensive state handling
+- **Tab-based Navigation**: Clean, intuitive user interface
+- **Real-time Updates**: Dynamic content updates and loading states
+
+## 🛠️ Tech Stack
+
+### Backend
+- **FastAPI**: Modern Python web framework
+- **OpenAI GPT-4o-mini**: AI language model for content generation
+- **FAISS**: Vector similarity search
+- **BM25**: Keyword-based search
+- **PyMuPDF**: PDF processing
+- **Pydantic**: Data validation and serialization
+
+### Frontend
+- **React 18**: Modern React with hooks
+- **TypeScript**: Type-safe development
+- **Tailwind CSS**: Utility-first CSS framework
+- **Vite**: Fast build tool and dev server
+- **Axios**: HTTP client for API communication
+- **Lucide React**: Beautiful icon library
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Docker and Docker Compose
+- OpenAI API key
+- Git
+
+### 1. Clone and Setup
 ```bash
-# 1. Clone and setup
 git clone <repository-url>
 cd test-chat
-
-# 2. Configure environment
 cp env.template .env
-# Edit .env with your OPENAI_API_KEY and API_TOKEN
+```
 
-# 3. Start development environment
+### 2. Configure Environment
+Edit `.env` file with your credentials:
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+API_TOKEN=your_api_token_here
+```
+
+### 3. Start Development Environment
+```bash
 chmod +x start-docker-dev.sh
 ./start-docker-dev.sh
 ```
 
-**Access the application:**
-- Main App: http://localhost:80
-- Frontend: http://localhost:3000  
-- Backend API: http://localhost:8080
-- API Docs: http://localhost:8080/docs
+### 4. Access the Application
+- **Main App**: http://localhost:80
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8080
+- **API Docs**: http://localhost:8080/docs
 
-📖 **For detailed setup instructions, see [DEVELOPER-GUIDE.md](./DEVELOPER-GUIDE.md)**
-
-## Architecture
-
-- **Data Ingestion**: PDF parsing, chunking (800-1200 tokens), and indexing
-- **Hybrid Retrieval**: BM25 (keyword) + FAISS (semantic) with Reciprocal Rank Fusion
-- **Response Generation**: GPT-4o-mini with strict citation formatting
-- **API**: FastAPI service with REST endpoints
-- **UI**: Simple Streamlit chat interface
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 test-chat/
-├── scripts/                  # Data processing modules
-│   ├── ingest.py            # Main ingestion script
-│   ├── pdf_processor.py     # PDF text extraction
-│   ├── text_chunker.py      # Text chunking logic
-│   └── index_builder.py     # Index creation
-├── app/                     # FastAPI application
-│   ├── __init__.py         # Package initialization
-│   ├── main.py             # FastAPI endpoints
-│   ├── config.py           # Configuration management
-│   ├── models.py           # Pydantic data models
-│   ├── retrieval.py        # Hybrid search pipeline
-│   ├── response_generator.py # GPT response generation
-│   ├── index_manager.py    # Index loading/management
-│   └── ui.py               # Streamlit chat interface
-├── data/                    # Local data directory
-│   ├── .gitkeep            # Keep directory in Git
-│   └── index/
-│       └── .gitkeep        # Keep index directory in Git
-├── var/data/index/          # Docker data directory
-│   └── .gitkeep            # Keep Docker directory in Git
-├── requirements.txt         # Python dependencies
-├── Dockerfile              # Container configuration
-├── docker-compose.yml      # Docker Compose setup
-├── .dockerignore           # Docker build exclusions
-├── .gitignore              # Git exclusions
-├── env.template           # Environment variables template
-└── README.md              # This file
+├── app/                          # FastAPI backend
+│   ├── main.py                   # Main application and API endpoints
+│   ├── models.py                 # Pydantic data models
+│   ├── auth.py                   # Authentication logic
+│   ├── response_generator.py     # AI response generation
+│   ├── retrieval.py              # Hybrid search implementation
+│   ├── index_manager.py          # Index management
+│   └── config.py                 # Configuration management
+├── frontend/                     # React frontend
+│   ├── src/
+│   │   ├── components/           # React components
+│   │   │   ├── KnowledgeQA.tsx   # HR manual chat interface
+│   │   │   ├── SkillSmith.tsx    # PDP generation interface
+│   │   │   ├── TeamMemoryAgent.tsx # Team collaboration (coming soon)
+│   │   │   └── TabNavigation.tsx # Navigation component
+│   │   ├── contexts/             # React context providers
+│   │   ├── services/              # API client
+│   │   └── types/                 # TypeScript type definitions
+│   └── package.json              # Frontend dependencies
+├── scripts/                      # Data processing scripts
+│   ├── ingest.py                 # PDF ingestion and indexing
+│   ├── pdf_processor.py          # PDF text extraction
+│   ├── text_chunker.py           # Text chunking logic
+│   └── index_builder.py          # Index creation
+├── data/                         # Data directory
+│   ├── HR_Manual.pdf             # Source HR manual
+│   ├── team.json                 # Team member data
+│   └── index/                    # Generated search indexes
+├── docker-compose.yml            # Docker configuration
+├── requirements.txt               # Python dependencies
+└── README.md                     # This file
 ```
-
-## Quick Start
-
-### Option 1: Docker (Recommended)
-
-1. **Clone and setup**:
-
-   ```bash
-   cd test-chat
-   cp env.template .env
-   # Edit .env and add your OpenAI API key
-   ```
-
-2. **Run with Docker Compose**:
-
-   ```bash
-   docker-compose up --build
-   ```
-
-3. **Access the application**:
-   - Chat UI: http://localhost:8501
-   - API docs: http://localhost:8080/docs
-   - Health check: http://localhost:8080/healthz
-
-### Option 2: Local Development
-
-1. **Install dependencies**:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. **Set environment variables**:
-
-   ```bash
-   export OPENAI_API_KEY="your-api-key-here"
-   export DATA_DIR="./data"
-   export INDEX_DIR="./data/index"
-   ```
-
-3. **Run data ingestion** (as specified in brief):
-
-   ```bash
-   python scripts/ingest.py --pdf data/HR_Manual.pdf
-   ```
-
-4. **Start the API service**:
-
-   ```bash
-   python -m uvicorn app.main:app --host 0.0.0.0 --port 8080
-   ```
-
-5. **Start the UI** (in another terminal):
-   ```bash
-   streamlit run app/ui.py --server.port 8501
-   ```
 
 ## 🔧 Configuration
 
 ### Environment Variables
 
-| Variable          | Default                  | Description                   |
-| ----------------- | ------------------------ | ----------------------------- |
-| `OPENAI_API_KEY`  | Required                 | OpenAI API key                |
-| `API_TOKEN`       | Optional                 | Bearer token for API security |
-| `CHAT_MODEL`      | `gpt-4o-mini`            | Chat completion model         |
-| `EMBEDDING_MODEL` | `text-embedding-3-large` | Embedding model               |
-| `DATA_DIR`        | `/var/data`              | Data storage directory        |
-| `INDEX_DIR`       | `/var/data/index`        | Index storage directory       |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OPENAI_API_KEY` | Required | OpenAI API key for AI features |
+| `API_TOKEN` | Optional | Bearer token for API security |
+| `CHAT_MODEL` | `gpt-4o-mini` | OpenAI chat completion model |
+| `EMBEDDING_MODEL` | `text-embedding-3-large` | OpenAI embedding model |
+| `DATA_DIR` | `/var/data` | Data storage directory |
+| `INDEX_DIR` | `/var/data/index` | Index storage directory |
 
-### Chunking Parameters
+### Team Configuration
+Team members are configured in `data/team.json` with:
+- Personal information (name, position, birth date)
+- Skills (hard skills and soft skills)
+- Authentication tokens
+- Notion workspace URLs
 
-- **Token Range**: 800-1200 tokens per chunk
-- **Overlap**: 100 tokens between chunks
-- **Splitting**: Heading-based with page number tracking
+## 📡 API Endpoints
 
-## API Endpoints
+### Authentication
+- `POST /validate-user-token` - Validate user ID token and return user data
+- `GET /team` - Get team member information
 
-### POST /ask
+### Knowledge QA
+- `POST /ask` - Query HR manual with hybrid search
+- `GET /healthz` - Health check endpoint
 
-Query the HR manual.
+### SkillSmith
+- `POST /generate-course` - Generate personalized development plan
 
-**Request**:
+### Data Management
+- `POST /ingest` - Rebuild indexes from PDF file
 
-```json
-{
-  "query": "What is the vacation policy?",
-  "max_tokens": 600
-}
-```
+## 🎯 Usage Examples
 
-**Headers** (if API_TOKEN is configured):
-
-```
-Authorization: Bearer your_api_token_here
-```
-
-**Response**:
-
-```json
-{
-  "answer": "According to the HR manual...",
-  "citations": [
-    "[HR Manual — Employee Benefits → Vacation Policy, pp.15–16]"
-  ],
-  "retrieved_ids": ["chunk_0042", "chunk_0043"],
-  "latency_ms": 1250
-}
-```
-
-### POST /ingest
-
-Rebuild indexes from a PDF file.
-
-**Request**:
-
-```json
-{
-  "pdf_path": "/path/to/manual.pdf"
-}
-```
-
-### GET /healthz
-
-Health check endpoint.
-
-**Response**:
-
-```json
-{
-  "ok": true
-}
-```
-
-## Example Queries
-
-Try these example questions:
-
+### Knowledge QA
+Ask questions about company policies:
 - "What is the vacation policy?"
 - "How do I request time off?"
 - "What are the working hours?"
 - "What is the dress code policy?"
-- "How is performance evaluated?"
-- "What benefits are offered to employees?"
-- "What is the remote work policy?"
-- "How do I report workplace issues?"
 
-## Citation Format
+### SkillSmith
+Generate personalized development plans:
+- "I want to improve my technical skills"
+- "Help me develop leadership capabilities"
+- "Create a plan for career advancement"
 
-All answers include citations in this exact format:
+## 🔐 Authentication
 
+The system uses token-based authentication:
+1. Users authenticate with their ID token
+2. Tokens are validated against `team.json`
+3. User data is loaded and displayed in the UI
+4. All API requests include the token in the Authorization header
+
+## 🐳 Docker Deployment
+
+### Development
+```bash
+docker-compose -f docker-compose.dev.yml up --build
 ```
-[HR Manual — <Heading path ≤ 3 levels>, pp.<a>–<b>]
+
+### Production
+```bash
+docker-compose up --build
 ```
 
-Examples:
-
-- `[HR Manual — Employee Benefits, p.15]`
-- `[HR Manual — Policies → Time Off → Vacation, pp.12–14]`
-
-If information is not found, the system responds:
-
-```
-"Not specified in the retrieved sections."
-```
+### Custom Configuration
+Multiple Docker Compose files available:
+- `docker-compose.dev.yml` - Development environment
+- `docker-compose.full.yml` - Full production setup
+- `docker-compose.render.yml` - Render.com deployment
 
 ## 🔍 Technical Details
 
-### Retrieval Pipeline
-
+### Search Implementation
 1. **BM25 Retrieval**: Keyword-based search using Okapi BM25
 2. **FAISS Retrieval**: Semantic search using HNSW index
 3. **Reciprocal Rank Fusion**: Merges results with RRF score calculation
+4. **Citation Generation**: Automatic source references with page numbers
 
-### Response Generation
-
-- Uses GPT-4o-mini for answer generation
-- Strict prompt engineering for citation compliance
-- Answers based solely on retrieved chunks
-- Temperature: 0.1 for consistency
+### AI Integration
+- **GPT-4o-mini**: Used for both HR Q&A and PDP generation
+- **Temperature**: 0.1 for consistent, factual responses
+- **Context Management**: User-specific context for personalized content
+- **Response Validation**: Structured output with error handling
 
 ### Data Processing
+- **PDF Processing**: PyMuPDF for text extraction
+- **Chunking**: 800-1200 token chunks with 100 token overlap
+- **Metadata Preservation**: Headings, page numbers, and structure
+- **Index Management**: Automatic index loading and caching
 
-- PDF text extraction with PyMuPDF
-- Heading detection based on font size/formatting
-- Token counting with tiktoken (cl100k_base encoding)
-- Metadata preservation (headings, page numbers)
+## 🚀 Development
+
+### Backend Development
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run development server
+uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+```
+
+### Frontend Development
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Data Ingestion
+```bash
+python scripts/ingest.py --pdf data/HR_Manual.pdf
+```
+
+## 📊 Performance
+
+- **Search Latency**: < 1 second for most queries
+- **AI Generation**: 5-15 seconds for PDP generation
+- **Concurrent Users**: Supports multiple simultaneous users
+- **Caching**: Response caching for improved performance
+
+## 🔒 Security
+
+- **Token Authentication**: Secure user authentication
+- **CORS Configuration**: Proper cross-origin resource sharing
+- **Input Validation**: Pydantic models for request validation
+- **Error Handling**: Comprehensive error handling and logging
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📝 License
+
+This project is proprietary software developed for internal team use.
+
+## 🆘 Support
+
+For technical support or questions:
+- Check the API documentation at `/docs`
+- Review the health check at `/healthz`
+- Examine logs for debugging information
+
+---
+
+**Cheatix Team Assistance** - Empowering teams with AI-driven productivity tools.

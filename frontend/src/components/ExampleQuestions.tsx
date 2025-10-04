@@ -1,4 +1,3 @@
-import React from 'react';
 import { ExampleQuestionsProps } from '@/types';
 import { MessageCircle } from 'lucide-react';
 

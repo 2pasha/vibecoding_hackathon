@@ -1,4 +1,3 @@
-import React from 'react';
 import { Message } from '@/types';
 import { ChatMessage } from './ChatMessage';
 import { ScrollArea } from './ui/ScrollArea';
