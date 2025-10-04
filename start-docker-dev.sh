@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# ETI HR Manual Chat - Docker Development Start Script
+# HR Manual Chat - Docker Development Start Script
 
 set -e
 
-echo "🐳 Starting ETI HR Manual Chat with Docker..."
+echo "🐳 Starting HR Manual Chat with Docker..."
 
 # Check if .env file exists
 if [ ! -f .env ]; then

@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# ETI HR Manual Chat - Health Check Script
+# HR Manual Chat - Health Check Script
 
 set -e
 
-echo "🔍 Checking ETI HR Manual Chat Development Environment..."
+echo "🔍 Checking HR Manual Chat Development Environment..."
 
 # Check if Docker is running
 if ! docker info > /dev/null 2>&1; then

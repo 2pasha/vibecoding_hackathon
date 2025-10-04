@@ -1,7 +1,7 @@
-# ETI HR Manual Chat - Developer Guide
+# HR Manual Chat - Developer Guide
 
 ## Overview
-This project is a Retrieval-Augmented Generation (RAG) system for ETI HR Manual, built with:
+This project is a Retrieval-Augmented Generation (RAG) system for HR Manual, built with:
 - **Backend**: FastAPI (Python) with OpenAI integration
 - **Frontend**: React + TypeScript with Vite
 - **Infrastructure**: Docker Compose for development environment

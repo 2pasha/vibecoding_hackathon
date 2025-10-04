@@ -51,7 +51,7 @@ def extract_page_numbers(citations: List[str]) -> List[int]:
     """Extract page numbers from citations."""
     pages = []
     for citation in citations:
-        # Extract page numbers from format: [ETI HR Manual — Section, pp.15–16]
+        # Extract page numbers from format: [HR Manual — Section, pp.15–16]
         page_match = re.search(r'pp?\.(\d+)(?:–(\d+))?', citation)
         if page_match:
             start_page = int(page_match.group(1))
@@ -64,7 +64,7 @@ def extract_sections(citations: List[str]) -> List[str]:
     """Extract section names from citations."""
     sections = []
     for citation in citations:
-        # Extract section from format: [ETI HR Manual — Section → Subsection, pp.15–16]
+        # Extract section from format: [HR Manual — Section → Subsection, pp.15–16]
         section_match = re.search(r'— ([^,]+),', citation)
         if section_match:
             section_text = section_match.group(1)
@@ -165,7 +165,7 @@ def calculate_citation_accuracy(response_citations: List[str], expected_sections
     
     # Check citation format
     format_correct = all(
-        re.match(r'\[ETI HR Manual — .+, pp?\.\d+(?:–\d+)?\]', citation)
+        re.match(r'\[HR Manual — .+, pp?\.\d+(?:–\d+)?\]', citation)
         for citation in response_citations
     )
     

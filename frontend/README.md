@@ -1,6 +1,6 @@
-# ETI HR Manual Chat Frontend
+# HR Manual Chat Frontend
 
-A modern React + TypeScript frontend for the ETI HR Manual Chat system.
+A modern React + TypeScript frontend for the HR Manual Chat system.
 
 ## Features
 
@@ -27,7 +27,7 @@ A modern React + TypeScript frontend for the ETI HR Manual Chat system.
 
 - Node.js 18+ 
 - npm or yarn
-- Running ETI HR Manual API backend
+- Running HR Manual API backend
 
 ### Installation
 
@@ -130,5 +130,5 @@ Make sure to configure the API base URL for your production environment.
 
 ## License
 
-This project is part of the ETI HR Manual RAG System.
+This project is part of the HR Manual RAG System.
 

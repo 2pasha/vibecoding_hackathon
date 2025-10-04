@@ -1,6 +1,6 @@
-# ETI HR Manual RAG System
+# HR Manual RAG System
 
-A Retrieval-Augmented Generation (RAG) system for querying the ETI HR Policies and Procedures manual. This system uses hybrid search (BM25 + FAISS) and GPT-4o-mini to provide accurate answers with proper citations.
+A Retrieval-Augmented Generation (RAG) system for querying the HR Policies and Procedures manual. This system uses hybrid search (BM25 + FAISS) and GPT-4o-mini to provide accurate answers with proper citations.
 
 ## 🚀 Quick Start for Developers
 
@@ -168,9 +168,9 @@ Authorization: Bearer your_api_token_here
 
 ```json
 {
-  "answer": "According to the ETI HR manual...",
+  "answer": "According to the HR manual...",
   "citations": [
-    "[ETI HR Manual — Employee Benefits → Vacation Policy, pp.15–16]"
+    "[HR Manual — Employee Benefits → Vacation Policy, pp.15–16]"
   ],
   "retrieved_ids": ["chunk_0042", "chunk_0043"],
   "latency_ms": 1250
@@ -219,13 +219,13 @@ Try these example questions:
 All answers include citations in this exact format:
 
 ```
-[ETI HR Manual — <Heading path ≤ 3 levels>, pp.<a>–<b>]
+[HR Manual — <Heading path ≤ 3 levels>, pp.<a>–<b>]
 ```
 
 Examples:
 
-- `[ETI HR Manual — Employee Benefits, p.15]`
-- `[ETI HR Manual — Policies → Time Off → Vacation, pp.12–14]`
+- `[HR Manual — Employee Benefits, p.15]`
+- `[HR Manual — Policies → Time Off → Vacation, pp.12–14]`
 
 If information is not found, the system responds:
 
