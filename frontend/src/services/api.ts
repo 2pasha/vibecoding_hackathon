@@ -10,6 +10,7 @@ import {
 class ApiClient {
   private client: AxiosInstance;
   private baseURL: string;
+  private idToken: string | null = null;
 
   constructor(baseURL: string = '/api') {
     this.baseURL = baseURL;
@@ -21,9 +22,12 @@ class ApiClient {
       },
     });
 
-    // Request interceptor (no auth needed - backend handles it internally)
+    // Request interceptor to add ID token
     this.client.interceptors.request.use(
       (config) => {
+        if (this.idToken) {
+          config.headers.Authorization = `Bearer ${this.idToken}`;
+        }
         return config;
       },
       (error) => {
@@ -101,6 +105,14 @@ class ApiClient {
   setBaseURL(url: string): void {
     this.baseURL = url;
     this.client.defaults.baseURL = url;
+  }
+
+  setIdToken(token: string | null): void {
+    this.idToken = token;
+  }
+
+  clearIdToken(): void {
+    this.idToken = null;
   }
 }
 

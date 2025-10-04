@@ -49,6 +49,7 @@ export interface UserAuthState {
     name: string;
     email: string;
   } | null;
+  idToken: string | null;
 }
 
 export type TabType = 'knowledge-qa' | 'skillsmith' | 'team-memory';
