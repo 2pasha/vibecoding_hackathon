@@ -8,6 +8,7 @@ from .config import Config
 from .models import QueryRequest, QueryResponse, IngestRequest, IngestResponse, HealthResponse, TokenValidationRequest, TokenValidationResponse, TeamMember, TeamResponse, UserTokenValidationRequest, UserTokenValidationResponse, CourseGenerationRequest, CourseGenerationResponse, ChecklistGenerationRequest, ChecklistGenerationResponse
 from .index_manager import IndexManager
 from .response_generator import ResponseGenerator
+from .notion_client import NotionClient
 from .auth import verify_token, validate_api_token
 from .logging_utils import log_query, log_ingestion_start, log_ingestion_end, log_error, hash_query
 from .cache import response_cache
@@ -80,6 +81,7 @@ def create_app() -> FastAPI:
 app = create_app()
 index_manager = IndexManager()
 response_generator = ResponseGenerator()
+notion_client = NotionClient()
 
 
 @app.on_event("startup")
@@ -112,8 +114,49 @@ async def ask_question(request: QueryRequest, _: bool = Depends(verify_token)):
             request.query, context_chunks
         )
         
+        # Check if this query is likely to be found in HR manual or should go to Notion
+        notion_results = []
+        should_try_notion = False
+        
+        # Define HR-related keywords that should stay in HR manual
+        hr_keywords = [
+            'vacation', 'leave', 'sick', 'maternity', 'paternity', 'benefits', 'salary', 'pay',
+            'performance', 'review', 'appraisal', 'disciplinary', 'termination', 'resignation',
+            'probation', 'onboarding', 'training', 'policy', 'procedure', 'employee', 'employment',
+            'workplace', 'hours', 'overtime', 'holiday', 'attendance', 'absence', 'dress code',
+            'code of conduct', 'harassment', 'discrimination', 'safety', 'health', 'insurance',
+            'retirement', 'pension', 'bonus', 'incentive', 'promotion', 'career', 'development'
+        ]
+        
+        query_lower = request.query.lower()
+        
+        # Check if query contains HR-related terms
+        is_hr_related = any(keyword in query_lower for keyword in hr_keywords)
+        
+        if not chunks:
+            should_try_notion = True
+        elif not is_hr_related:
+            # If query doesn't seem HR-related, try Notion first
+            should_try_notion = True
+        else:
+            # For HR-related queries, check if chunks are actually relevant
+            max_rrf_score = max(chunk.get("rrf_score", 0) for chunk in chunks)
+            if max_rrf_score < 0.01:  # Very low relevance threshold
+                should_try_notion = True
+        
+        if should_try_notion:
+            print(f"DEBUG: Trying Notion fallback for query: {request.query}")
+            notion_results = await notion_client.search(request.query, max_results=6)
+            print(f"DEBUG: Notion search returned {len(notion_results)} results")
+            # If we found Notion results, use them instead of HR chunks
+            if notion_results:
+                chunks = []
+                print(f"DEBUG: Using Notion results, clearing HR chunks")
+            else:
+                print(f"DEBUG: No Notion results found, using HR chunks")
+        
         answer, citations = await response_generator.generate_response(
-            request.query, chunks
+            request.query, chunks, notion_results
         )
         
         latency_ms = int((time.time() - start_time) * 1000)

@@ -27,8 +27,11 @@ IMPORTANT INSTRUCTIONS:
 7. Be concise but comprehensive
 8. Do not make assumptions or add information not in the chunks"""
     
-    async def generate_response(self, query: str, chunks: List[Dict]) -> Tuple[str, List[str]]:
+    async def generate_response(self, query: str, chunks: List[Dict], notion_results: List[Dict] = None) -> Tuple[str, List[str]]:
         if not chunks:
+            # If no HR manual chunks, try Notion results
+            if notion_results:
+                return await self._generate_notion_response(query, notion_results)
             return "Not specified in the retrieved sections.", []
         
         context_parts, citations = self._prepare_context(chunks)
@@ -89,6 +92,77 @@ IMPORTANT INSTRUCTIONS:
         if gpt_citations:
             # Use the citations GPT generated
             formatted_citations = [f"[HR Manual — {cite}]" for cite in gpt_citations]
+            return list(set(formatted_citations))  # Remove duplicates
+        else:
+            # Fallback to metadata-based citations if no GPT citations found
+            used_citations = []
+            for citation in citations:
+                if citation in answer or any(part in answer for part in citation.split("—")[1:]):
+                    used_citations.append(citation)
+            
+            return used_citations if used_citations else list(set(citations))
+    
+    async def _generate_notion_response(self, query: str, notion_results: List[Dict]) -> Tuple[str, List[str]]:
+        """Generate response based on Notion search results."""
+        if not notion_results:
+            return "Not specified in the retrieved sections.", []
+        
+        # Prepare Notion context
+        notion_context = []
+        citations = []
+        
+        for i, result in enumerate(notion_results[:3]):  # Limit to top 3 results
+            title = result.get("title", "Untitled")
+            content = result.get("content", "")
+            url = result.get("url", "")
+            
+            # Use actual content if available, otherwise fall back to title
+            content_text = content if content else title
+            
+            notion_context.append(f"<NOTION_RESULT id={i}>\nTitle: {title}\nContent: {content_text}\n</NOTION_RESULT>\n")
+            citations.append(f"[Notion — {title}]")
+        
+        context = "\n".join(notion_context)
+        
+        # Generate answer using Notion context
+        messages = [
+            {"role": "system", "content": """You are an AI assistant that answers questions based on Notion search results.
+
+IMPORTANT INSTRUCTIONS:
+1. Answer the user's question using the information provided in the Notion search results
+2. Provide a helpful, informative response based on the content found
+3. If the Notion results contain relevant information, use it to answer the question
+4. Include citations using format: [Notion — <Title>] when referencing specific pages
+5. Be concise but comprehensive in your answer
+6. If the Notion results don't contain relevant information, respond with: "Not specified in the retrieved sections."
+7. Do not make assumptions or add information not in the results"""},
+            {"role": "user", "content": f"Question: {query}\n\nNotion Search Results:\n{context}\n\nAnswer:"}
+        ]
+        
+        response = self.client.chat.completions.create(
+            model=Config.CHAT_MODEL,
+            messages=messages,
+            temperature=0.1,
+            max_tokens=250,
+            stream=False
+        )
+        
+        answer = response.choices[0].message.content.strip()
+        used_citations = self._extract_notion_citations(answer, citations)
+        
+        return answer, used_citations
+    
+    def _extract_notion_citations(self, answer: str, citations: List[str]) -> List[str]:
+        """Extract Notion citations from the generated answer."""
+        import re
+        
+        # Extract citations that GPT actually generated in the answer
+        citation_pattern = r'\[Notion — ([^\]]+)\]'
+        gpt_citations = re.findall(citation_pattern, answer)
+        
+        if gpt_citations:
+            # Use the citations GPT generated
+            formatted_citations = [f"[Notion — {cite}]" for cite in gpt_citations]
             return list(set(formatted_citations))  # Remove duplicates
         else:
             # Fallback to metadata-based citations if no GPT citations found
