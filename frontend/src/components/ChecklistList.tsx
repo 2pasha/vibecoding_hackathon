@@ -71,7 +71,7 @@ export function ChecklistList({ checklists, onCheckboxChange, onViewFull }: Chec
                           className="w-3 h-3 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                         />
                         <span className={`text-xs ${item.completed ? 'line-through text-gray-500' : 'text-gray-700'}`}>
-                          {item.text}
+                          {typeof item.text === 'string' ? item.text : JSON.stringify(item.text)}
                         </span>
                       </label>
                     ))}

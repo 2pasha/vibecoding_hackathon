@@ -140,11 +140,6 @@ export function SkillSmith() {
     setPdpState('result');
   };
 
-  const handleGoToNotion = () => {
-    // Open Notion page in new tab
-    window.open('https://notion.so', '_blank');
-  };
-
   const handleGenerateChecklist = async () => {
     setIsGeneratingChecklist(true);
     
@@ -168,9 +163,9 @@ export function SkillSmith() {
           // Parse the checklist data
           const parsedCategories: ChecklistCategory[] = data.checklist.map((cat: any) => ({
             category: cat.category,
-            items: cat.items.map((item: string, index: number) => ({
+            items: cat.items.map((item: any, index: number) => ({
               id: `${cat.category}_${index}`,
-              text: item,
+              text: typeof item === 'string' ? item : JSON.stringify(item),
               completed: false
             }))
           }));
@@ -376,7 +371,6 @@ export function SkillSmith() {
           onRegeneratePDP={handleGeneratePDP}
           onCheckboxChange={handleCheckboxChange}
           onViewFullChecklist={handleViewFullChecklist}
-          onGoToNotion={handleGoToNotion}
         />
       )}
       

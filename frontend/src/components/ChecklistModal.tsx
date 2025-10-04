@@ -56,7 +56,7 @@ export function ChecklistModal({ checklist, onClose, onCheckboxChange }: Checkli
                         className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
                       />
                       <span className={`text-sm leading-relaxed ${item.completed ? 'line-through text-gray-500' : 'text-gray-700 group-hover:text-gray-900'}`}>
-                        {item.text}
+                        {typeof item.text === 'string' ? item.text : JSON.stringify(item.text)}
                       </span>
                     </label>
                   ))}
