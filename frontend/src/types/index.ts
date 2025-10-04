@@ -1,5 +1,3 @@
-export type TabType = 'knowledge-qa' | 'skillsmith';
-
 // API Response Types
 export interface QueryRequest {
   query: string;
@@ -44,6 +42,8 @@ export interface AuthState {
   isValid: boolean;
   message: string;
 }
+
+export type TabType = 'knowledge-qa' | 'skillsmith' | 'team-memory';
 
 export interface AppState {
   messages: Message[];

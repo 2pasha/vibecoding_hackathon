@@ -2,6 +2,7 @@ import { AppProvider, useApp } from '@/contexts/AppContext';
 import { TabNavigation } from '@/components/TabNavigation';
 import { KnowledgeQA } from '@/components/KnowledgeQA';
 import { SkillSmith } from '@/components/SkillSmith';
+import { TeamMemoryAgent } from '@/components/TeamMemoryAgent';
 import { BookOpen, Settings, User } from 'lucide-react';
 
 function AppContent() {
@@ -13,6 +14,8 @@ function AppContent() {
         return <KnowledgeQA />;
       case 'skillsmith':
         return <SkillSmith />;
+      case 'team-memory':
+        return <TeamMemoryAgent />;
       default:
         return <KnowledgeQA />;
     }
