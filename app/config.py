@@ -10,6 +10,7 @@ class Config:
     DATA_DIR = os.getenv("DATA_DIR", "/var/data")
     INDEX_DIR = os.getenv("INDEX_DIR", "/var/data/index")
     API_TOKEN = os.getenv("API_TOKEN")
+    NOTION_API_KEY = os.getenv("NOTION_API_KEY")
     
     @classmethod
     def validate(cls):
