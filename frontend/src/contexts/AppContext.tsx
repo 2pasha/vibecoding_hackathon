@@ -18,7 +18,7 @@ type AppAction =
 
 // Initial state
 const initialAuthState: AuthState = {
-  token: apiClient.getToken() || '',
+  token: import.meta.env.VITE_API_TOKEN || '',
   isValid: false,
   message: '',
 };
@@ -113,11 +113,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Auto-validate token on startup if it exists in localStorage
+  // Auto-validate token on startup if it exists in environment variables
   useEffect(() => {
-    const savedToken = apiClient.getToken();
-    if (savedToken && savedToken !== state.auth.token) {
-      validateToken(savedToken);
+    const envToken = import.meta.env.VITE_API_TOKEN;
+    if (envToken && envToken !== state.auth.token) {
+      validateToken(envToken);
     }
   }, []); // Empty dependency array - only run on mount
 

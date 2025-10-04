@@ -68,7 +68,6 @@ export interface ChatMessageProps {
 
 export interface SettingsPanelProps {
   auth: AuthState;
-  onAuthChange: (auth: AuthState) => void;
 }
 
 export interface ChatInputProps {
