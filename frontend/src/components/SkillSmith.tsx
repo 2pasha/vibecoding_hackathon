@@ -149,18 +149,6 @@ export function SkillSmith() {
   if (pdpState === 'ready') {
     return (
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl">
-              <Wrench className="h-8 w-8 text-white" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">SkillSmith</h2>
-              <p className="text-gray-600">Hi {state.userAuth.user?.name}, let's create your PDP</p>
-            </div>
-          </div>
-        </div>
 
         {/* User Profile Section */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
