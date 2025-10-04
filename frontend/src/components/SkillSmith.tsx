@@ -145,29 +145,134 @@ export function SkillSmith() {
     );
   }
 
-  // Ready state - show PDP generation (no input field)
+  // Ready state - show PDP generation with user profile
   if (pdpState === 'ready') {
     return (
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl">
-              <Wrench className="h-8 w-8 text-white" />
+      <div className="max-w-6xl mx-auto space-y-6">
+
+        {/* User Profile Section */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h3 className="text-xl font-semibold text-gray-900 mb-6">Your Profile</h3>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Profile Card */}
+            <div className="lg:col-span-1">
+              <div className="text-center">
+                <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-purple-200">
+                  <img 
+                    src={state.userAuth.user?.photo_url || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'} 
+                    alt={state.userAuth.user?.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-1">{state.userAuth.user?.name}</h4>
+                <p className="text-purple-600 font-medium mb-2">{state.userAuth.user?.position}</p>
+                <div className="text-sm text-gray-500">
+                  Born: {new Date(state.userAuth.user?.birth_date || '').toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </div>
+              </div>
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">SkillSmith</h2>
-              <p className="text-gray-600">Hi {state.userAuth.user?.name}, let's create your PDP</p>
+
+            {/* Skills Section */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Hard Skills */}
+              <div>
+                <h5 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  Hard Skills
+                </h5>
+                <div className="flex flex-wrap gap-2">
+                  {state.userAuth.user?.hard_skills?.map((skill: string, index: number) => (
+                    <span 
+                      key={index}
+                      className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Soft Skills */}
+              <div>
+                <h5 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  Soft Skills
+                </h5>
+                <div className="flex flex-wrap gap-2">
+                  {state.userAuth.user?.soft_skills?.map((skill: string, index: number) => (
+                    <span 
+                      key={index}
+                      className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-200"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* PDP Generation Section */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="mb-6 text-center">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">Ready to generate your Personal Development Plan?</h3>
+            <p className="text-gray-600">
+              We'll create a customized plan based on your profile and career goals.
+            </p>
+          </div>
+
+          {/* Learning Goal Input */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              What would you like to focus on? (Optional)
+            </label>
+            <textarea
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              placeholder="e.g., I want to improve my leadership skills and become a better team player..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              rows={3}
+            />
+            
+            {/* Tip Buttons */}
+            <div className="mt-3">
+              <p className="text-sm text-gray-500 mb-2">Quick tips to get started:</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setUserInput("I want to dive deeper into ")}
+                  className="px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded-full border border-blue-200 hover:bg-blue-100 transition-colors"
+                >
+                  I want to dive deeper into...
+                </button>
+                <button
+                  onClick={() => setUserInput("I want to improve my ")}
+                  className="px-3 py-1.5 text-sm bg-green-50 text-green-700 rounded-full border border-green-200 hover:bg-green-100 transition-colors"
+                >
+                  I want to improve my...
+                </button>
+                <button
+                  onClick={() => setUserInput("I want to learn more about ")}
+                  className="px-3 py-1.5 text-sm bg-purple-50 text-purple-700 rounded-full border border-purple-200 hover:bg-purple-100 transition-colors"
+                >
+                  I want to learn more about...
+                </button>
+                <button
+                  onClick={() => setUserInput("I want to develop my ")}
+                  className="px-3 py-1.5 text-sm bg-orange-50 text-orange-700 rounded-full border border-orange-200 hover:bg-orange-100 transition-colors"
+                >
+                  I want to develop my...
+                </button>
+              </div>
             </div>
           </div>
 
           <div className="text-center">
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">Ready to generate your Personal Development Plan?</h3>
-              <p className="text-gray-600">
-                We'll create a customized plan based on your profile and career goals.
-              </p>
-            </div>
-
             <button
               onClick={handleGeneratePDP}
               className="flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl mx-auto"
