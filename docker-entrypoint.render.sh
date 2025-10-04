@@ -17,7 +17,7 @@ fi
 # ==== Інгестіон ====
 if [ ! -f "$INDEX_DIR/metadata.json" ]; then
     echo "📚 No indexes found. Running initial ingestion..."
-    HR_MANUAL="/app/data/ETI_HR_Manual.pdf"
+    HR_MANUAL="/app/data/HR_Manual.pdf"
     if [ ! -f "$HR_MANUAL" ]; then
         echo "❌ Error: PDF not found at $HR_MANUAL"
         exit 1

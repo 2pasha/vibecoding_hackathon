@@ -13,7 +13,7 @@ from pathlib import Path
 
 # Configuration
 API_BASE_URL = "http://localhost:8080"
-HR_MANUAL_PATH = "data/ETI_HR_Manual.pdf"
+HR_MANUAL_PATH = "data/HR_Manual.pdf"
 TEST_QUERIES = [
     "What is the vacation policy?",
     "How do I request time off?",

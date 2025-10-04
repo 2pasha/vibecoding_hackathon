@@ -86,7 +86,7 @@ npm run build
 │   ├── package.json
 │   └── Dockerfile
 ├── data/                  # Data and indexes
-│   ├── ETI_HR_Manual.pdf # Source document
+│   ├── HR_Manual.pdf # Source document
 │   └── index/            # Generated indexes
 ├── scripts/               # Utility scripts
 │   ├── index_builder.py   # Build search indexes

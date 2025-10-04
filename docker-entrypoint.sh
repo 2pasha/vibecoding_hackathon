@@ -17,7 +17,7 @@ if [ ! -f "/var/data/index/metadata.json" ]; then
     echo "📚 No indexes found. Running initial ingestion..."
     
     # Use the brief-specified PDF path
-    HR_MANUAL="/app/data/ETI_HR_Manual.pdf"
+    HR_MANUAL="/app/data/HR_Manual.pdf"
     
     if [ ! -f "$HR_MANUAL" ]; then
         echo "❌ Error: PDF not found at $HR_MANUAL"
