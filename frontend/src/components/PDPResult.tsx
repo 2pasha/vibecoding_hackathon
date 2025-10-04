@@ -255,9 +255,23 @@ export function PDPResult({
                                   onChange={(e) => onCheckboxChange(checklist.id, categoryIndex, itemIndex, e.target.checked)}
                                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                 />
-                                <span className={`text-sm ${item.completed ? 'line-through text-gray-500' : 'text-gray-700'}`}>
-                                  {typeof item.text === 'string' ? item.text : JSON.stringify(item.text)}
-                                </span>
+                                <div className={`text-sm ${item.completed ? 'line-through text-gray-500' : 'text-gray-700'}`}>
+                                  {typeof item.text === 'string' ? (
+                                    item.text.includes('\n• ') ? (
+                                      <div>
+                                        {item.text.split('\n• ').map((line, idx) => (
+                                          <div key={idx} className={idx === 0 ? '' : 'ml-4 text-xs text-gray-600'}>
+                                            {idx === 0 ? line : `• ${line}`}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      item.text
+                                    )
+                                  ) : (
+                                    JSON.stringify(item.text)
+                                  )}
+                                </div>
                               </label>
                             ))}
                           </div>
