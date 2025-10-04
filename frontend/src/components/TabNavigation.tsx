@@ -29,28 +29,21 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
   ];
 
   return (
-    <nav className="flex bg-gray-100/60 rounded-xl p-1.5" role="tablist">
-      {tabs.map((tab) => {
-        const Icon = tab.icon;
-        const isActive = activeTab === tab.id;
-        
-        return (
-          <button
-            key={tab.id}
-            onClick={() => onTabChange(tab.id)}
-            role="tab"
-            aria-selected={isActive}
-            className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm tab-button focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-              isActive
-                ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-            }`}
-          >
-            <Icon className={`h-4 w-4 ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
-            <span>{tab.label}</span>
-          </button>
-        );
-      })}
-    </nav>
+    <div className="flex bg-gray-100 rounded-lg p-1">
+      {tabs.map((tab) => (
+        <button
+          key={tab.id}
+          onClick={() => onTabChange(tab.id)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+            activeTab === tab.id
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+          }`}
+        >
+          <tab.icon className="h-4 w-4" />
+          {tab.label}
+        </button>
+      ))}
+    </div>
   );
 }

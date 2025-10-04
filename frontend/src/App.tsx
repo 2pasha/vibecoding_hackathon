@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AppProvider, useApp } from '@/contexts/AppContext';
 import { TabNavigation } from '@/components/TabNavigation';
 import { KnowledgeQA } from '@/components/KnowledgeQA';
 import { SkillSmith } from '@/components/SkillSmith';
 import { TeamMemoryAgent } from '@/components/TeamMemoryAgent';
-import { BookOpen, Settings, User } from 'lucide-react';
+import { AuthModal } from '@/components/AuthModal';
+import { BookOpen, Settings, User, LogOut } from 'lucide-react';
 
 function AppContent() {
-  const { state, setActiveTab } = useApp();
+  const { state, setActiveTab, login, logout } = useApp();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const renderActiveTab = () => {
     switch (state.activeTab) {
@@ -56,12 +58,34 @@ function AppContent() {
               >
                 <Settings className="h-5 w-5 header-icon" />
               </button>
-              <button 
-                className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                aria-label="User profile"
-              >
-                <User className="h-5 w-5 header-icon" />
-              </button>
+              
+              {state.userAuth.isAuthenticated ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700">
+                    Hi, {state.userAuth.user?.name}
+                  </span>
+                  <button 
+                    onClick={logout}
+                    className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    aria-label="Logout"
+                  >
+                    <LogOut className="h-5 w-5 header-icon" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700">
+                    Hi, folks
+                  </span>
+                  <button 
+                    onClick={() => setIsAuthModalOpen(true)}
+                    className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    aria-label="Sign in"
+                  >
+                    <User className="h-5 w-5 header-icon" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -71,6 +95,13 @@ function AppContent() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {renderActiveTab()}
       </div>
+
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onLogin={(idToken) => login(idToken)}
+      />
     </div>
   );
 }

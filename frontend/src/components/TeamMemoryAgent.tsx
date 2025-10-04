@@ -1,75 +1,108 @@
-import { Brain, Clock, Users, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { Brain, Send, Loader2, Users, MessageSquare, Database } from 'lucide-react';
 
 export function TeamMemoryAgent() {
+  const [query, setQuery] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [result, setResult] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim() || isProcessing) return;
+
+    setIsProcessing(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setResult(`Team memory search results for: "${query}"`);
+    } catch (error) {
+      setResult('Error searching team memory');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-8">
-      {/* Coming Soon Icon */}
-      <div className="relative">
-        <div className="p-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl shadow-2xl">
-          <Brain className="h-16 w-16 text-white" />
-        </div>
-        <div className="absolute -top-2 -right-2 p-2 bg-yellow-400 rounded-full shadow-lg">
-          <Sparkles className="h-6 w-6 text-yellow-800" />
-        </div>
-      </div>
-
-      {/* Main Message */}
-      <div className="text-center space-y-4">
-        <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-          Team Memory Agent
-        </h2>
-        <p className="text-2xl font-semibold text-gray-700">
-          See you soon!!
-        </p>
-        <p className="text-lg text-gray-500 max-w-2xl">
-          We're working on an amazing AI-powered team memory system that will help your team remember, learn, and grow together.
-        </p>
-      </div>
-
-      {/* Feature Preview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 max-w-4xl">
-        <div className="bg-white/70 backdrop-blur-sm border border-gray-200/60 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Users className="h-6 w-6 text-blue-600" />
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
+              <Brain className="h-5 w-5 text-white" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Team Knowledge</h3>
-          </div>
-          <p className="text-gray-600 text-sm">
-            Capture and share team knowledge, decisions, and learnings automatically.
-          </p>
-        </div>
-
-        <div className="bg-white/70 backdrop-blur-sm border border-gray-200/60 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Clock className="h-6 w-6 text-green-600" />
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Team Memory Agent</h2>
+              <p className="text-sm text-gray-500">AI-powered team knowledge and memory management</p>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Smart Reminders</h3>
           </div>
-          <p className="text-gray-600 text-sm">
-            Get intelligent reminders about important team decisions and follow-ups.
-          </p>
         </div>
 
-        <div className="bg-white/70 backdrop-blur-sm border border-gray-200/60 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Brain className="h-6 w-6 text-purple-600" />
+        {/* Features Grid */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <Users className="h-5 w-5 text-blue-500" />
+              <div>
+                <h3 className="text-sm font-medium text-gray-900">Team Knowledge</h3>
+                <p className="text-xs text-gray-500">Access shared team insights</p>
+              </div>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">AI Insights</h3>
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <MessageSquare className="h-5 w-5 text-green-500" />
+              <div>
+                <h3 className="text-sm font-medium text-gray-900">Conversation History</h3>
+                <p className="text-xs text-gray-500">Search past discussions</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <Database className="h-5 w-5 text-purple-500" />
+              <div>
+                <h3 className="text-sm font-medium text-gray-900">Memory Storage</h3>
+                <p className="text-xs text-gray-500">Persistent team memory</p>
+              </div>
+            </div>
           </div>
-          <p className="text-gray-600 text-sm">
-            Discover patterns and insights from your team's collective knowledge.
-          </p>
         </div>
-      </div>
 
-      {/* Coming Soon Badge */}
-      <div className="mt-8">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 rounded-full">
-          <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-          <span className="text-sm font-medium text-purple-700">Coming Soon</span>
+        {/* Search Interface */}
+        <div className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="query" className="block text-sm font-medium text-gray-700 mb-2">
+                Search Team Memory
+              </label>
+              <textarea
+                id="query"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="e.g., What did we decide about the project timeline?, Find discussions about API design, Search for meeting notes from last week..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                rows={4}
+                disabled={isProcessing}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={!query.trim() || isProcessing}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              {isProcessing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+              {isProcessing ? 'Searching...' : 'Search Memory'}
+            </button>
+          </form>
+
+          {result && (
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Search Results:</h3>
+              <p className="text-gray-900">{result}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
