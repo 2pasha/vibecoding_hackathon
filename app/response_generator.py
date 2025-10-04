@@ -221,3 +221,20 @@ Generate the complete roadmap in clean HTML content now:"""
         content = content.strip()
         
         return content
+    
+    async def generate_course_content(self, prompt: str) -> str:
+        """Generate course content for PDP based on a simple prompt."""
+        messages = [
+            {"role": "system", "content": "You are an expert career development specialist. Create personalized development plans in JSON format."},
+            {"role": "user", "content": prompt}
+        ]
+        
+        response = self.client.chat.completions.create(
+            model=Config.CHAT_MODEL,
+            messages=messages,
+            temperature=0.7,
+            max_tokens=2000,
+            stream=False
+        )
+        
+        return response.choices[0].message.content.strip()
