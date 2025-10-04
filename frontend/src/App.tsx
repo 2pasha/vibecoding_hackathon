@@ -6,7 +6,7 @@ import { ExampleQuestions } from '@/components/ExampleQuestions';
 import { BookOpen, Trash2 } from 'lucide-react';
 
 function AppContent() {
-  const { state, validateToken, checkApiHealth, sendMessage, clearMessages } = useApp();
+  const { state, validateToken, sendMessage, clearMessages } = useApp();
 
   // Manual health check only when needed
 
@@ -45,8 +45,6 @@ function AppContent() {
               <SettingsPanel
                 auth={state.auth}
                 onAuthChange={handleAuthChange}
-                apiHealthy={state.apiHealthy}
-                onApiHealthCheck={checkApiHealth}
               />
             </div>
 

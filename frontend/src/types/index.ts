@@ -46,7 +46,6 @@ export interface AuthState {
 export interface AppState {
   messages: Message[];
   isProcessing: boolean;
-  apiHealthy: boolean;
   auth: AuthState;
 }
 
@@ -58,8 +57,6 @@ export interface ChatMessageProps {
 export interface SettingsPanelProps {
   auth: AuthState;
   onAuthChange: (auth: AuthState) => void;
-  apiHealthy: boolean;
-  onApiHealthCheck: () => Promise<boolean>;
 }
 
 export interface ChatInputProps {

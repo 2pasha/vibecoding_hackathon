@@ -11,7 +11,6 @@ type AuthAction =
 type AppAction = 
   | { type: 'ADD_MESSAGE'; payload: Message }
   | { type: 'SET_PROCESSING'; payload: boolean }
-  | { type: 'SET_API_HEALTH'; payload: boolean }
   | { type: 'CLEAR_MESSAGES' }
   | AuthAction;
 
@@ -25,7 +24,6 @@ const initialAuthState: AuthState = {
 const initialState: AppState = {
   messages: [],
   isProcessing: false,
-  apiHealthy: true, // Assume healthy for development
   auth: initialAuthState,
 };
 
@@ -49,8 +47,6 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, messages: [...state.messages, action.payload] };
     case 'SET_PROCESSING':
       return { ...state, isProcessing: action.payload };
-    case 'SET_API_HEALTH':
-      return { ...state, apiHealthy: action.payload };
     case 'CLEAR_MESSAGES':
       return { ...state, messages: [] };
     case 'SET_TOKEN':
@@ -67,7 +63,6 @@ interface AppContextType {
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
   validateToken: (token: string) => Promise<void>;
-  checkApiHealth: () => Promise<boolean>;
   sendMessage: (content: string) => Promise<void>;
   clearMessages: () => void;
 }
@@ -102,17 +97,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const checkApiHealth = async (): Promise<boolean> => {
-    try {
-      const isHealthy = await apiClient.checkHealth();
-      dispatch({ type: 'SET_API_HEALTH', payload: isHealthy });
-      return isHealthy;
-    } catch (error) {
-      dispatch({ type: 'SET_API_HEALTH', payload: false });
-      return false;
-    }
-  };
-
   const sendMessage = async (content: string) => {
     if (!content.trim() || state.isProcessing || !state.auth.isValid) {
       return;
@@ -129,7 +113,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_PROCESSING', payload: true });
 
     try {
-      const response = await apiClient.askQuestion(content.trim(), 600);
+      const response = await apiClient.askQuestion(content.trim());
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -162,7 +146,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     state,
     dispatch,
     validateToken,
-    checkApiHealth,
     sendMessage,
     clearMessages,
   };

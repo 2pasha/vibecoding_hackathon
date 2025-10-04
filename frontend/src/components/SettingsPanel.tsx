@@ -5,19 +5,15 @@ import {
   CheckCircle, 
   XCircle, 
   AlertCircle, 
-  RefreshCw, 
-  Settings
+  RefreshCw
 } from 'lucide-react';
 
 export function SettingsPanel({ 
   auth, 
-  onAuthChange, 
-  apiHealthy, 
-  onApiHealthCheck 
+  onAuthChange
 }: SettingsPanelProps) {
   const [tokenInput, setTokenInput] = useState(auth.token);
   const [isValidating, setIsValidating] = useState(false);
-  const [isCheckingHealth, setIsCheckingHealth] = useState(false);
 
   const handleValidateToken = async () => {
     if (!tokenInput.trim()) return;
@@ -27,15 +23,6 @@ export function SettingsPanel({
       await onAuthChange({ ...auth, token: tokenInput.trim() });
     } finally {
       setIsValidating(false);
-    }
-  };
-
-  const handleHealthCheck = async () => {
-    setIsCheckingHealth(true);
-    try {
-      await onApiHealthCheck();
-    } finally {
-      setIsCheckingHealth(false);
     }
   };
 
@@ -92,42 +79,6 @@ export function SettingsPanel({
         </div>
       </div>
 
-      {/* Settings Section */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Settings className="h-4 w-4 text-muted-foreground" />
-          <h3 className="font-semibold text-sm">Settings</h3>
-        </div>
-        
-        {/* API Health Check */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm">API Status</span>
-            <button
-              onClick={handleHealthCheck}
-              disabled={isCheckingHealth}
-              className="p-1 hover:bg-accent rounded"
-            >
-              <RefreshCw className={`h-4 w-4 ${isCheckingHealth ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
-          
-          <div className="text-sm">
-            {apiHealthy ? (
-              <div className="flex items-center gap-2 text-green-600">
-                <CheckCircle className="h-4 w-4" />
-                API is running
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 text-red-600">
-                <XCircle className="h-4 w-4" />
-                API not available
-              </div>
-            )}
-          </div>
-        </div>
-        
-      </div>
     </div>
   );
 }
