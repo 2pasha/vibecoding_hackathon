@@ -11,6 +11,18 @@ function AppContent() {
   const { state, setActiveTab, login, logout } = useApp();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  // Listen for custom event to open auth modal
+  React.useEffect(() => {
+    const handleOpenAuthModal = () => {
+      setIsAuthModalOpen(true);
+    };
+
+    window.addEventListener('openAuthModal', handleOpenAuthModal);
+    return () => {
+      window.removeEventListener('openAuthModal', handleOpenAuthModal);
+    };
+  }, []);
+
   const renderActiveTab = () => {
     switch (state.activeTab) {
       case 'knowledge-qa':
