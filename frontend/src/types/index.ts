@@ -43,12 +43,21 @@ export interface AuthState {
   message: string;
 }
 
+export interface UserAuthState {
+  isAuthenticated: boolean;
+  user: {
+    name: string;
+    email: string;
+  } | null;
+}
+
 export type TabType = 'knowledge-qa' | 'skillsmith' | 'team-memory';
 
 export interface AppState {
   messages: Message[];
   isProcessing: boolean;
   auth: AuthState;
+  userAuth: UserAuthState;
   activeTab: TabType;
 }
 
