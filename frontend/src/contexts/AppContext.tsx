@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, ReactNode } from 'react';
+import { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
 import { AuthState, AppState, Message, TabType, UserAuthState } from '@/types';
 import { apiClient } from '@/services/api';
 
@@ -16,17 +16,60 @@ type AppAction =
   | { type: 'CLEAR_MESSAGES' }
   | AuthAction;
 
+// localStorage keys
+const AUTH_STORAGE_KEY = 'cheatix_user_auth';
+const ID_TOKEN_STORAGE_KEY = 'cheatix_id_token';
+
+// Helper functions for localStorage
+const saveAuthToStorage = (userAuth: UserAuthState, idToken: string) => {
+  try {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(userAuth));
+    localStorage.setItem(ID_TOKEN_STORAGE_KEY, idToken);
+  } catch (error) {
+    console.error('Error saving auth to localStorage:', error);
+  }
+};
+
+const loadAuthFromStorage = (): { userAuth: UserAuthState; idToken: string | null } => {
+  try {
+    const savedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
+    const savedToken = localStorage.getItem(ID_TOKEN_STORAGE_KEY);
+    
+    if (savedAuth && savedToken) {
+      const userAuth = JSON.parse(savedAuth);
+      return { userAuth, idToken: savedToken };
+    }
+  } catch (error) {
+    console.error('Error loading auth from localStorage:', error);
+  }
+  
+  return {
+    userAuth: {
+      isAuthenticated: false,
+      user: null,
+      idToken: null,
+    },
+    idToken: null,
+  };
+};
+
+const clearAuthFromStorage = () => {
+  try {
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    localStorage.removeItem(ID_TOKEN_STORAGE_KEY);
+  } catch (error) {
+    console.error('Error clearing auth from localStorage:', error);
+  }
+};
+
+// Load initial state from localStorage
+const { userAuth: initialUserAuthState, idToken: initialIdToken } = loadAuthFromStorage();
+
 // Initial state
 const initialAuthState: AuthState = {
   token: '', // No token needed - backend handles authentication internally
   isValid: true, // Assume API is always available since backend handles auth
   message: '',
-};
-
-const initialUserAuthState: UserAuthState = {
-  isAuthenticated: false,
-  user: null,
-  idToken: null,
 };
 
 const initialState: AppState = {
@@ -153,17 +196,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const data = await response.json();
         const userData = data.user;
         
+        const userAuthState = {
+          isAuthenticated: true,
+          user: {
+            name: userData.name,
+            email: `${userData.name.toLowerCase().replace(/\s+/g, '.')}@cheatix.com`
+          },
+          idToken: idToken
+        };
+        
         dispatch({
           type: 'SET_USER_AUTH',
-          payload: {
-            isAuthenticated: true,
-            user: {
-              name: userData.name,
-              email: `${userData.name.toLowerCase().replace(/\s+/g, '.')}@cheatix.com`
-            },
-            idToken: idToken
-          }
+          payload: userAuthState
         });
+        
+        // Save to localStorage
+        saveAuthToStorage(userAuthState, idToken);
+        
         // Set the ID token in the API client
         apiClient.setIdToken(idToken);
       } else {
@@ -177,6 +226,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           }
         });
         apiClient.clearIdToken();
+        clearAuthFromStorage();
       }
     } catch (error) {
       console.error('Error validating token:', error);
@@ -190,6 +240,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       });
       apiClient.clearIdToken();
+      clearAuthFromStorage();
     }
   };
 
@@ -204,7 +255,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
     // Clear the ID token from the API client
     apiClient.clearIdToken();
+    // Clear from localStorage
+    clearAuthFromStorage();
   };
+
+  // Restore authentication state on startup
+  useEffect(() => {
+    if (initialIdToken && initialUserAuthState.isAuthenticated) {
+      // Set the ID token in the API client
+      apiClient.setIdToken(initialIdToken);
+    }
+  }, []); // Only run on mount
 
   const value: AppContextType = {
     state,
